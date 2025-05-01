@@ -20,7 +20,7 @@ app.post("/groups/share", (req:Request, res:Response)=>{
 
 
 app.get("/groups/:id", (req:Request, res:Response)=>{
-
+    
 });
 
 app.post("/user/groups/:userId", (req:Request, res:Response)=>{
