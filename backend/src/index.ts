@@ -25,7 +25,7 @@ app.get("/groups/:id", (req:Request, res:Response)=>{
 
 app.post("/user/groups/:userId", (req:Request, res:Response)=>{
 
-})
+});
 
 app.listen(3000,()=>{
     console.log("https server is runing on the port 3000");
