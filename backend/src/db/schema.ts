@@ -6,12 +6,12 @@ export interface IUrl extends Document {
 
 export interface IUser extends Document {
   userId: string;
-  urlId: mongoose.Types.ObjectId;
+  sharedUrls: mongoose.Types.ObjectId;
 }
 
 export interface IGroup extends Document {
   slug: string;
-  urlId: mongoose.Types.ObjectId;
+  sharedUrls: mongoose.Types.ObjectId;
   userId: mongoose.Types.ObjectId;
 }
 
@@ -33,7 +33,7 @@ const userSchema = new Schema<IUser>(
       required: true,
       unique: true,
     },
-    urlId: {
+    sharedUrls: {
       type: Schema.Types.ObjectId,
       ref: "Url",
       required: true,
@@ -56,7 +56,7 @@ const groupSchema = new Schema<IGroup>(
       ref: "User",
       required: true,
     },
-    urlId: {
+    sharedUrls: {
       type: Schema.Types.ObjectId,
       ref: "Url",
       required: true,
