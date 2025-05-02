@@ -159,8 +159,36 @@ app.post("/groups/share", (req, res) => __awaiter(void 0, void 0, void 0, functi
         res.status(500).json({ error: "URL not shared, please try again" });
     }
 }));
-app.get("/groups/:id", (req, res) => { });
-app.post("/user/groups/:userId", (req, res) => { });
+app.get("/groups/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = req.params.id;
+    try {
+        const group = yield schema_1.Group.findById(id)
+            .populate({
+            path: 'sharedUrls',
+            model: 'Url',
+            select: 'url -_id'
+        })
+            .populate({
+            path: 'members',
+            model: 'User',
+            select: 'username -_id'
+        });
+        if (!group) {
+            res.status(404).json({ message: 'Group not found' });
+            return;
+        }
+        res.status(200).json({
+            id: group._id,
+            name: group.slug,
+            members: group.members,
+            urls: group.sharedUrls,
+        });
+    }
+    catch (error) {
+        console.error("Error fetching group:", error);
+        res.status(500).json({ error: "Server error while retrieving group" });
+    }
+}));
 function main() {
     return mongoose_1.default.connect("mongodb+srv://gauravKumar:gaurav123@cluster0.swj1o.mongodb.net/?retryWrites=true&w=majority");
 }

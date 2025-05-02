@@ -141,9 +141,44 @@ app.post("/groups/share", async (req: Request, res: Response) => {
   }
 });
 
-app.get("/groups/:id", (req: Request, res: Response) => {});
+app.get("/groups/:id", async(req: Request, res: Response) => {
+  const id = req.params.id;
 
-app.post("/user/groups/:userId", (req: Request, res: Response) => {});
+  if (!id) {
+    res.status(400).json({message:"Group id is required"});
+    return;
+  }
+  try {
+    const group = await Group.findById(id)
+      .populate({
+        path: 'sharedUrls',
+        model: 'Url',
+        select: 'url -_id'
+      })
+      .populate({
+        path: 'members',
+        model: 'User',
+        select: 'username -_id'
+      });
+      
+    if (!group) {
+      res.status(404).json({message: 'Group not found'});
+      return;
+    }
+    
+    res.status(200).json({
+      id: group._id,
+      name: group.slug,
+      members: group.members,
+      urls: group.sharedUrls,
+    });
+    
+  } catch (error) {
+    console.error("Error fetching group:", error);
+    res.status(500).json({error: "Server error while retrieving group"});
+  }
+});
+
 
 function main() {
   return mongoose.connect(
