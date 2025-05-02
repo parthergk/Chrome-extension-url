@@ -33,7 +33,7 @@ app.post("/groups/create", async (req: Request, res: Response) => {
       });
       if (!creator) {
         creator = await User.create({
-          username: bodyData.data.creatorUsername,
+          username: bodyData.data.creatorUsername.toLocaleLowerCase(),
           sharedUrls: [],
         });
       }
@@ -67,7 +67,7 @@ app.post("/groups/join", async (req: Request, res: Response) => {
     let user = await User.findOne({ username: bodyData.data.username });
     if (!user) {
       user = await User.create({
-        username: bodyData.data.username,
+        username: bodyData.data.username.toLocaleLowerCase(),
         sharedUrls: [],
       });
     }
