@@ -2,6 +2,7 @@ import express, { json, Request, Response } from "express";
 import cors from "cors";
 import { z } from "zod";
 import { Group, Url, User } from "./db/schema";
+import mongoose, { ObjectId } from "mongoose";
 const app = express();
 
 app.use(cors());
@@ -10,6 +11,7 @@ app.use(json());
 app.post("/groups/create", async (req: Request, res: Response) => {
   const parsedData = z.object({
     name: z.string(),
+    creatorUsername: z.string().optional(),
   });
 
   const bodyData = parsedData.safeParse(req.body);
@@ -19,17 +21,30 @@ app.post("/groups/create", async (req: Request, res: Response) => {
   }
 
   try {
-    const newGroup = new Group({ slug: bodyData.data.name });
-    const saveGroup = await newGroup.save();
+    const newGroup = new Group({
+      slug: bodyData.data.name,
+      members: [],
+      sharedUrls: [],
+    });
 
-    if (!saveGroup._id) {
-      res.status(500).json({ message: "Group not created" });
-      return;
+    if (bodyData.data.creatorUsername) {
+      let creator = await User.findOne({
+        username: bodyData.data.creatorUsername,
+      });
+      if (!creator) {
+        creator = await User.create({
+          username: bodyData.data.creatorUsername,
+          sharedUrls: [],
+        });
+      }
+      newGroup.members.push(creator._id as mongoose.Types.ObjectId);
     }
+
+    const savedGroup = await newGroup.save();
 
     res.status(200).json({
       message: "Group is created successfully",
-      groupId: saveGroup._id,
+      groupId: savedGroup._id,
     });
   } catch (error) {
     res.status(500).json({ error: "Group not created, please try again" });
@@ -38,26 +53,29 @@ app.post("/groups/create", async (req: Request, res: Response) => {
 
 app.post("/groups/join", async (req: Request, res: Response) => {
   const parsedData = z.object({
-    userId: z.string(),
+    username: z.string(),
     id: z.string(),
   });
 
   const bodyData = parsedData.safeParse(req.body);
   if (!bodyData.success) {
-    res.status(400).json({ message: "UserId or Group ID missing" });
+    res.status(400).json({ message: "Username or Group ID missing" });
     return;
   }
 
   try {
-    const user = await User.findOne({ userId: bodyData.data.userId });
+    let user = await User.findOne({ username: bodyData.data.username });
     if (!user) {
-      await User.create({ userId: bodyData.data.userId });
+      user = await User.create({
+        username: bodyData.data.username,
+        sharedUrls: [],
+      });
     }
 
     const updatedGroup = await Group.findByIdAndUpdate(
       bodyData.data.id,
       {
-        $addToSet: { members: bodyData.data.userId },
+        $addToSet: { members: user._id },
       },
       { new: true }
     );
@@ -78,28 +96,48 @@ app.post("/groups/join", async (req: Request, res: Response) => {
 app.post("/groups/share", async (req: Request, res: Response) => {
   const parsedData = z.object({
     url: z.string(),
-    id: z.string()
+    id: z.string(),
+    username: z.string().optional(),
   });
 
   const bodyData = parsedData.safeParse(req.body);
   if (!bodyData.success) {
-    res.status(400).json({ message: "Please enter a url" });
+    res.status(400).json({ message: "Please enter a url and group ID" });
     return;
-  };
+  }
 
   try {
-      const url = await Url.create({url: bodyData.data.url});
-      res.status(200).json({message:"Url shared successfully"});
+    const newUrl = await Url.create({ url: bodyData.data.url });
 
-      await Group.findByIdAndUpdate(
-        bodyData.data.id,
+    const updatedGroup = await Group.findByIdAndUpdate(
+      bodyData.data.id,
+      {
+        $addToSet: { sharedUrls: newUrl._id },
+      },
+      { new: true }
+    );
+
+    if (!updatedGroup) {
+      await Url.findByIdAndDelete(newUrl._id);
+      res.status(404).json({ message: "Group not found" });
+      return;
+    }
+
+    if (bodyData.data.username) {
+      await User.findOneAndUpdate(
+        { username: bodyData.data.username },
         {
-          $addToSet: { sharedUrls: url._id },
-        },
-        { new: true }
-      ); 
+          $addToSet: { sharedUrls: newUrl._id },
+        }
+      );
+    }
+
+    res.status(200).json({
+      message: "URL shared successfully",
+      urlId: newUrl._id,
+    });
   } catch (error) {
-    res.status(500).json({error:"url not shared"});
+    res.status(500).json({ error: "URL not shared, please try again" });
   }
 });
 
@@ -107,6 +145,19 @@ app.get("/groups/:id", (req: Request, res: Response) => {});
 
 app.post("/user/groups/:userId", (req: Request, res: Response) => {});
 
-app.listen(3000, () => {
-  console.log("https server is runing on the port 3000");
-});
+function main() {
+  return mongoose.connect(
+    "mongodb+srv://gauravKumar:gaurav123@cluster0.swj1o.mongodb.net/?retryWrites=true&w=majority"
+  );
+}
+
+main()
+  .then(() => {
+    console.log("db is connected");
+    app.listen(3000, () => {
+      console.log("https server is runing on the port 3000");
+    });
+  })
+  .catch(() => {
+    console.log("db not connected");
+  });

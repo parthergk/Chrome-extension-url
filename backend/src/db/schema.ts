@@ -5,14 +5,14 @@ export interface IUrl extends Document {
 }
 
 export interface IUser extends Document {
-  userId: string;
-  sharedUrls: mongoose.Types.ObjectId;
+  username: string;
+  sharedUrls: mongoose.Types.ObjectId[];
 }
 
 export interface IGroup extends Document {
   slug: string;
-  sharedUrls: mongoose.Types.ObjectId;
-  userId: mongoose.Types.ObjectId;
+  members: mongoose.Types.ObjectId[];
+  sharedUrls: mongoose.Types.ObjectId[];
 }
 
 const urlSchema = new Schema<IUrl>(
@@ -22,27 +22,23 @@ const urlSchema = new Schema<IUrl>(
       required: true,
     },
   },
+  { timestamps: true }
 );
-
-export const Url = model<IUrl>("Url", urlSchema);
 
 const userSchema = new Schema<IUser>(
   {
-    userId: {
+    username: {
       type: String,
       required: true,
       unique: true,
     },
-    sharedUrls: {
+    sharedUrls: [{
       type: Schema.Types.ObjectId,
       ref: "Url",
-      required: true,
-    },
+    }],
   },
   { timestamps: true }
 );
-
-export const User = model<IUser>("User", userSchema);
 
 const groupSchema = new Schema<IGroup>(
   {
@@ -51,18 +47,18 @@ const groupSchema = new Schema<IGroup>(
       required: true,
       unique: true,
     },
-    userId: {
+    members: [{
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true,
-    },
-    sharedUrls: {
+    }],
+    sharedUrls: [{
       type: Schema.Types.ObjectId,
       ref: "Url",
-      required: true,
-    },
+    }],
   },
   { timestamps: true }
 );
 
 export const Group = model<IGroup>("Group", groupSchema);
+export const User = model<IUser>("User", userSchema);
+export const Url = model<IUrl>("Url", urlSchema);
