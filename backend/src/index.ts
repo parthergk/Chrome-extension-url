@@ -87,7 +87,7 @@ app.post("/groups/join", async (req: Request, res: Response) => {
 
     res
       .status(200)
-      .json({ message: "Joined group successfully", group: updatedGroup });
+      .json({ message: "success", group: updatedGroup });
   } catch (error) {
     res.status(500).json({ error: "Update failed" });
   }
@@ -133,7 +133,7 @@ app.post("/groups/share", async (req: Request, res: Response) => {
     }
 
     res.status(200).json({
-      message: "URL shared successfully",
+      message: "success",
       urlId: newUrl._id,
     });
   } catch (error) {

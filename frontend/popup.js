@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const activeTab = tabs[0];
       currentUrl = activeTab.url;
       currentTitle = activeTab.title;
-      
+
       currentUrlElement.textContent = `${currentTitle}: ${currentUrl}`;
     });
     
@@ -167,7 +167,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       
       chrome.runtime.sendMessage({
-        action: 'connectHttps',
+        action: 'joinGroup',
         groupId: groupId,
         username: username
       }, function(response) {
