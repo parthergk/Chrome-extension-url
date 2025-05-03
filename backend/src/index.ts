@@ -2,7 +2,7 @@ import express, { json, Request, Response } from "express";
 import cors from "cors";
 import { z } from "zod";
 import { Group, Url, User } from "./db/schema";
-import mongoose, { ObjectId } from "mongoose";
+import mongoose from "mongoose";
 const app = express();
 
 app.use(cors());

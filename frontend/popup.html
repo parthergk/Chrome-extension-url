@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>URL Bookmarker</title>
+  <link rel="stylesheet" type="text/css" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <h1>URL Bookmarker</h1>
+    
+    <div id="tabs">
+      <button class="tab-btn active" data-tab="save-tab">Save URL</button>
+      <button class="tab-btn" data-tab="group-tab">Group Sharing</button>
+    </div>
+    
+    <div id="save-tab" class="tab-content active">
+      <div id="current-url-container">
+        <h3>Current Page</h3>
+        <div id="current-url"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="notes">Notes:</label>
+        <textarea id="notes" placeholder="Add notes about this URL..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="category">Category:</label>
+        <input type="text" id="category" placeholder="Work, Personal, Shopping...">
+      </div>
+
+      <div class="button-group">
+        <button id="save-btn">Save URL</button>
+        <button id="share-btn" disabled>Share with Group</button>
+      </div>
+
+      <div id="bookmarks-container">
+        <h3>Saved Bookmarks</h3>
+        <div id="bookmarks-list"></div>
+      </div>
+    </div>
+    
+    <div id="group-tab" class="tab-content">
+      <!-- <div id="connection-status">
+        <div id="status-indicator" class="disconnected"></div>
+        <span id="status-text">Disconnected</span>
+      </div>
+       -->
+      <div id="connection-form">
+        <div class="form-group">
+          <label for="group-id">Group ID:</label>
+          <input type="text" id="group-id" placeholder="Enter a uniqe group ID">
+        </div>
+        
+        <div class="form-group">
+          <label for="username">Your Username:</label>
+          <input type="text" id="username" placeholder="Enter your username">
+        </div>
+        
+        <button id="connect-btn">Connect</button>
+        <button id="disconnect-btn" style="display: none;">Disconnect</button>
+      </div>
+      
+      <div id="group-info" style="display: none;">
+        <h3>Group Information</h3>
+        <p><strong>Group ID:</strong> <span id="current-group-id"></span></p>
+        <p><strong>Your Username:</strong> <span id="current-username"></span></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

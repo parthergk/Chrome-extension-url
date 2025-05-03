@@ -1,0 +1,206 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .container {
+    width: 350px;
+    padding: 15px;
+  }
+  
+  h1 {
+    color: #4285f4;
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 10px;
+  }
+  
+  h3 {
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #333;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 12px;
+    color: #555;
+  }
+  
+  textarea, input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  
+  textarea {
+    height: 60px;
+    resize: vertical;
+  }
+  
+  button {
+    background-color: #4285f4;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%;
+  }
+  
+  button:hover {
+    background-color: #357ae8;
+  }
+  
+  button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+  
+  .button-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  
+  .button-group button {
+    flex: 1;
+  }
+  
+  /* Tab styles */
+  #tabs {
+    display: flex;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .tab-btn {
+    flex: 1;
+    background-color: #f5f5f5;
+    color: #555;
+    padding: 8px;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+  }
+  
+  .tab-btn.active {
+    background-color: white;
+    color: #4285f4;
+    border-bottom: 2px solid #4285f4;
+  }
+  
+  .tab-content {
+    display: none;
+  }
+  
+  .tab-content.active {
+    display: block;
+  }
+  
+  /* Connection status styles */
+  #connection-status {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 8px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+  }
+  
+  #status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+  }
+  
+  .connected {
+    background-color: #4caf50;
+  }
+  
+  .disconnected {
+    background-color: #f44336;
+  }
+  
+  #status-text {
+    font-size: 12px;
+    font-weight: bold;
+  }
+  
+  #current-url-container {
+    background-color: #f5f5f5;
+    padding: 8px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+  }
+  
+  #current-url {
+    word-break: break-all;
+    font-size: 12px;
+    color: #666;
+  }
+  
+  #bookmarks-container {
+    margin-top: 20px;
+    max-height: 200px;
+    overflow-y: auto;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 10px;
+  }
+  
+  .bookmark-item {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .bookmark-item:last-child {
+    border-bottom: none;
+  }
+  
+  .bookmark-url {
+    font-size: 12px;
+    color: #1a0dab;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 3px;
+    word-break: break-all;
+  }
+  
+  .bookmark-notes {
+    font-size: 11px;
+    color: #666;
+  }
+  
+  .bookmark-category {
+    font-size: 10px;
+    background-color: #f1f1f1;
+    color: #555;
+    padding: 2px 5px;
+    border-radius: 3px;
+    display: inline-block;
+    margin-top: 3px;
+  }
+  
+  .delete-btn {
+    color: #ff5252;
+    background: none;
+    border: none;
+    font-size: 11px;
+    float: right;
+    padding: 2px;
+    cursor: pointer;
+    width: auto;
+  }
