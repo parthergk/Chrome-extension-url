@@ -87,7 +87,7 @@ app.post("/groups/join", async (req: Request, res: Response) => {
 
     res
       .status(200)
-      .json({ message: "success", group: updatedGroup });
+      .json({ message: "success", data: {groupId: updatedGroup._id, userId: user._id, username: user.username} });
   } catch (error) {
     res.status(500).json({ error: "Update failed" });
   }

@@ -1,28 +1,45 @@
-let groupId = null;
-let username = null;
-
-async function joinGroup(gId, user) {
-  groupId = gId;
-  username = user;
-
+async function createGroup(groupName) {
   try {
-    const response = await fetch("http://localhost:3000/groups/share", {
+    const response = await fetch("http://localhost:3000/groups/create",{
+      method:"POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body:JSON.stringify({
+        name:groupName
+      })  
+    });
+
+    const result = await response.json();
+    if (result.message==="success") {
+      return true
+    }else{
+      return false
+    }
+  } catch (error) {
+    console.error("Error joining group:", error);
+    return false
+  }
+}
+async function joinGroup(gId, user) {
+  try {
+    const response = await fetch("http://localhost:3000/groups/join", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
       },
       body: JSON.stringify({
-        username: username,
-        id: groupId,
+        username: user,
+        id: gId,
       }),
     });
 
-    const data = await response.json();
-
-    if (data.message === "success") {
+    const result = await response.json();
+    if (result.message === "success") {
       chrome.storage.sync.set({
-        groupId: data.groupId,
-        username: data.username,
+        groupId: result.data.groupId,
+        userId: result.data.userId,
+        username: result.data.username,
       });
       return true;
     } else {
@@ -43,6 +60,7 @@ async function shareUrlWithGroup(
   groupId,
   username
 ) {
+  
   try {
     const response = await fetch("http://localhost:3000/groups/share", {
       method: "POST",
@@ -70,22 +88,25 @@ async function shareUrlWithGroup(
 }
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  if (request.action === "joinGroup") {
+  if (request.action === "createGroup") {
+    (async ()=>{
+      const success = await createGroup(request.groupName);
+      sendResponse({ success: success });
+    })();
+    return true;
+  }else if (request.action === "joinGroup") {
     (async () => {
-      const success = joinGroup(request.groupId, request.username);
+      const success = await joinGroup(request.groupId, request.username);
       sendResponse({ success: success });
     })();
     return true;
   } else if (request.action === "leaveGroup") {
-    // Disconnect from WebSocket
-    // if (socket) {
-    //   socket.close();
-    //   socket = null;
-    // }
-    // chrome.storage.sync.set({ websocketConnected: false });
+    
     sendResponse({ success: true });
   } else if (request.action === "shareUrl") {
+    console.log("share url request");
     chrome.storage.sync.get(["groupId", "username"], function (data) {
+      console.log("geting groupId and username",data);
       // If we have stored connection info
       if (data.groupId && data.username) {
         (async () => {
