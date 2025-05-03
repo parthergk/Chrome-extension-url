@@ -75,7 +75,7 @@ app.post("/groups/create", (req, res) => __awaiter(void 0, void 0, void 0, funct
             });
             if (!creator) {
                 creator = yield schema_1.User.create({
-                    username: bodyData.data.creatorUsername,
+                    username: bodyData.data.creatorUsername.toLocaleLowerCase(),
                     sharedUrls: [],
                 });
             }
@@ -105,7 +105,7 @@ app.post("/groups/join", (req, res) => __awaiter(void 0, void 0, void 0, functio
         let user = yield schema_1.User.findOne({ username: bodyData.data.username });
         if (!user) {
             user = yield schema_1.User.create({
-                username: bodyData.data.username,
+                username: bodyData.data.username.toLocaleLowerCase(),
                 sharedUrls: [],
             });
         }
@@ -118,7 +118,7 @@ app.post("/groups/join", (req, res) => __awaiter(void 0, void 0, void 0, functio
         }
         res
             .status(200)
-            .json({ message: "Joined group successfully", group: updatedGroup });
+            .json({ message: "success", group: updatedGroup });
     }
     catch (error) {
         res.status(500).json({ error: "Update failed" });
@@ -151,7 +151,7 @@ app.post("/groups/share", (req, res) => __awaiter(void 0, void 0, void 0, functi
             });
         }
         res.status(200).json({
-            message: "URL shared successfully",
+            message: "success",
             urlId: newUrl._id,
         });
     }
@@ -161,6 +161,10 @@ app.post("/groups/share", (req, res) => __awaiter(void 0, void 0, void 0, functi
 }));
 app.get("/groups/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
+    if (!id) {
+        res.status(400).json({ message: "Group id is required" });
+        return;
+    }
     try {
         const group = yield schema_1.Group.findById(id)
             .populate({

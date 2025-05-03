@@ -89,6 +89,8 @@ document.addEventListener('DOMContentLoaded', function() {
           notes: notes,
           category: category
         }, function(response) {
+          console.log("response from bg", response);
+          
           if (response.success) {
             showNotification('URL shared with group!');
             
@@ -165,7 +167,7 @@ document.addEventListener('DOMContentLoaded', function() {
         showNotification('Please fill in all fields');
         return;
       }
-      
+
       chrome.runtime.sendMessage({
         action: 'joinGroup',
         groupId: groupId,

@@ -13,6 +13,7 @@ const userSchema = new mongoose_1.Schema({
         type: String,
         required: true,
         unique: true,
+        index: true
     },
     sharedUrls: [{
             type: mongoose_1.Schema.Types.ObjectId,
