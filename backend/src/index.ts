@@ -43,7 +43,7 @@ app.post("/groups/create", async (req: Request, res: Response) => {
     const savedGroup = await newGroup.save();
 
     res.status(200).json({
-      message: "Group is created successfully",
+      message: "success",
       groupId: savedGroup._id,
     });
   } catch (error) {

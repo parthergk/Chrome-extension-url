@@ -83,7 +83,7 @@ app.post("/groups/create", (req, res) => __awaiter(void 0, void 0, void 0, funct
         }
         const savedGroup = yield newGroup.save();
         res.status(200).json({
-            message: "Group is created successfully",
+            message: "success",
             groupId: savedGroup._id,
         });
     }

@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const statusText = document.getElementById('status-text');
   const groupIdInput = document.getElementById("group-id");
   const usernameInput = document.getElementById("username");
+  const createButton = document.getElementById("create-btn");
   const joinButton = document.getElementById("join-btn");
   const leaveButton = document.getElementById("leave-btn");
   const groupInfoDiv = document.getElementById('group-info');
@@ -182,26 +183,26 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // createButton.addEventListener("click", function () {
-  //   const groupName = groupIdInput.value.trim();
+  //create group listener
+  createButton.addEventListener("click", function () {
+    const groupName = groupIdInput.value.trim();    
+    if (!groupName) {
+      showNotification("Please fill in all fields");
+      return;
+    }
 
-  //   if (!groupName) {
-  //     showNotification("Please fill in all fields");
-  //     return;
-  //   }
-
-  //   chrome.runtime.sendMessage(
-  //     {
-  //       action: "createGroup",
-  //       groupName: groupName,
-  //     },
-  //     function (response) {
-  //       if (response.success) {
-  //         showNotification("Created group");
-  //       }
-  //     }
-  //   );
-  // });
+    chrome.runtime.sendMessage(
+      {
+        action: "createGroup",
+        groupName: groupName,
+      },
+      function (response) {
+        if (response.success) {
+          showNotification("Created group");
+        }
+      }
+    );
+  });
 
   function checkConnectionStatus() {
     
@@ -283,6 +284,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Function to show a temporary notification
   function showNotification(message) {
+    console.log("notification from create group");
+    
     const notification = document.createElement("div");
     notification.className = "notification";
     notification.textContent = message;

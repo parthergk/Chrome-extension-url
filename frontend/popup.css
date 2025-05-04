@@ -109,9 +109,29 @@ body {
   .tab-content.active {
     display: block;
   }
+
+  .or{
+    display:  flex;
+    justify-content: center;
+    align-items: center;
+    margin-block: 15px;
+  }
+
+  .sline{
+    height: 1px;
+    width: 100%;
+    background-color: #333;
+    margin-inline: 5px;
+  }
+  .eline{
+    height: 1px;
+    width: 100%;
+    background-color: #333;
+    margin-inline: 5px;
+  }
   
   /* Connection status styles */
-  #connection-status {
+  #join-status {
     display: flex;
     align-items: center;
     margin-bottom: 15px;
@@ -127,11 +147,11 @@ body {
     margin-right: 8px;
   }
   
-  .connected {
+  .joined {
     background-color: #4caf50;
   }
   
-  .disconnected {
+  .leaved {
     background-color: #f44336;
   }
   
