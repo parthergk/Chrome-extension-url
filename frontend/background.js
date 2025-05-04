@@ -37,6 +37,7 @@ async function joinGroup(gId, user) {
     const result = await response.json();
     if (result.message === "success") {
       chrome.storage.sync.set({
+        status: true,
         groupId: result.data.groupId,
         userId: result.data.userId,
         username: result.data.username,
@@ -101,12 +102,25 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     })();
     return true;
   } else if (request.action === "leaveGroup") {
-    
-    sendResponse({ success: true });
+    chrome.storage.sync.remove(['status','groupId', 'userId', 'username'], function () {
+      console.log("User has left the group and data is cleared");
+      sendResponse({ success: true });
+    });
+    return true
+  }else if (request.action === "getJoinStatus") {    
+    chrome.storage.sync.get(
+      ['status','groupId', 'username'], 
+      function(data) { 
+        sendResponse({
+          joined: data.status || false,
+          groupId: data.groupId || '',
+          username: data.username || ''
+        });
+      }
+    );
+    return true;
   } else if (request.action === "shareUrl") {
-    console.log("share url request");
     chrome.storage.sync.get(["groupId", "username"], function (data) {
-      console.log("geting groupId and username",data);
       // If we have stored connection info
       if (data.groupId && data.username) {
         (async () => {
