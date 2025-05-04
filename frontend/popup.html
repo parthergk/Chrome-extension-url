@@ -41,12 +41,12 @@
     </div>
     
     <div id="group-tab" class="tab-content">
-      <div id="connection-status">
-        <div id="status-indicator" class="disconnected"></div>
-        <span id="status-text">Disconnected</span>
+      <div id="join-status">
+        <div id="status-indicator" class="Joined"></div>
+        <span id="status-text">Joined</span>
       </div>
       
-      <div id="connection-form">
+      <div id="join-form">
         <div class="form-group">
           <label for="group-id">Group ID:</label>
           <input type="text" id="group-id" placeholder="Enter a uniqe group ID">
@@ -57,14 +57,14 @@
           <input type="text" id="username" placeholder="Enter your username">
         </div>
         
-        <button id="connect-btn">Connect</button>
+        <button id="join-btn">Join</button>
       </div>
       
       <div id="group-info" style="display: none;">
         <h3>Group Information</h3>
         <p><strong>Group ID:</strong> <span id="current-group-id"></span></p>
         <p><strong>Your Username:</strong> <span id="current-username"></span></p>
-        <button id="disconnect-btn" style="display: none;">Disconnect</button>
+        <button id="leave-btn" style="display: none;">Leave</button>
       </div>
     </div>
   </div>

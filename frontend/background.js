@@ -103,7 +103,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     return true;
   } else if (request.action === "leaveGroup") {
     chrome.storage.sync.remove(['status','groupId', 'userId', 'username'], function () {
-      console.log("User has left the group and data is cleared");
       sendResponse({ success: true });
     });
     return true

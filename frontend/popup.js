@@ -14,10 +14,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const statusText = document.getElementById('status-text');
   const groupIdInput = document.getElementById("group-id");
   const usernameInput = document.getElementById("username");
-  const connectButton = document.getElementById("connect-btn");
-  const disconnectButton = document.getElementById("disconnect-btn");
+  const joinButton = document.getElementById("join-btn");
+  const leaveButton = document.getElementById("leave-btn");
   const groupInfoDiv = document.getElementById('group-info');
-  const connectionFormDiv = document.getElementById('connection-form');
+  const joinFormDiv = document.getElementById('join-form');
   const currentGroupIdSpan = document.getElementById('current-group-id');
   const currentUsernameSpan = document.getElementById('current-username');
 
@@ -211,12 +211,12 @@ document.addEventListener("DOMContentLoaded", function () {
         isConnected = response.joined;
         if (isConnected) {
           // Update UI for connected state
-          statusIndicator.className = "connected";
-          statusText.textContent = "Connected";
+          statusIndicator.className = "joined";
+          statusText.textContent = "Joined";
           shareButton.disabled = false;
-          connectButton.style.display = "none";
-          disconnectButton.style.display = "block";
-          connectionFormDiv.style.display = "none";
+          joinButton.style.display = "none";
+          leaveButton.style.display = "block";
+          joinFormDiv.style.display = "none";
           groupInfoDiv.style.display = "block";
 
           // Update group info
@@ -228,12 +228,12 @@ document.addEventListener("DOMContentLoaded", function () {
           usernameInput.value = response.username;
         } else {
           // Update UI for disconnected state
-          statusIndicator.className = "disconnected";
-          statusText.textContent = "Disconnected";
+          statusIndicator.className = "leaved";
+          statusText.textContent = "Leaved";
           shareButton.disabled = true;
-          connectButton.style.display = "block";
-          disconnectButton.style.display = "none";
-          connectionFormDiv.style.display = "block";
+          joinButton.style.display = "block";
+          leaveButton.style.display = "none";
+          joinFormDiv.style.display = "block";
           groupInfoDiv.style.display = "none";
 
           // Load saved connection info if available
@@ -246,8 +246,8 @@ document.addEventListener("DOMContentLoaded", function () {
     );
   }
 
-  // Connect button event listener
-  connectButton.addEventListener("click", function () {
+  // Join button event listener
+  joinButton.addEventListener("click", function () {
     const groupId = groupIdInput.value.trim();
     const username = usernameInput.value.trim();
 
@@ -265,14 +265,14 @@ document.addEventListener("DOMContentLoaded", function () {
       function (response) {
         if (response.success) {
           checkConnectionStatus();
-          showNotification("Connected to group!");
+          showNotification("Joined group");
         }
       }
     );
   });
 
-  // Disconnect button event listener
-  disconnectButton.addEventListener("click", function () {
+  // Leave button event listener
+  leaveButton.addEventListener("click", function () {
     chrome.runtime.sendMessage({ action: "leaveGroup" }, function (response) {
       if (response.success) {
         checkConnectionStatus();
