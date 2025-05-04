@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const statusIndicator = document.getElementById('status-indicator');
   const statusText = document.getElementById('status-text');
   const groupIdInput = document.getElementById("group-id");
+  const groupNameInput = document.getElementById("group-name");
   const usernameInput = document.getElementById("username");
   const createButton = document.getElementById("create-btn");
   const joinButton = document.getElementById("join-btn");
@@ -185,7 +186,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   //create group listener
   createButton.addEventListener("click", function () {
-    const groupName = groupIdInput.value.trim();    
+    const groupName = groupNameInput.value.trim();    
     if (!groupName) {
       showNotification("Please fill in all fields");
       return;
