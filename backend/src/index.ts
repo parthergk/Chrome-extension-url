@@ -54,12 +54,12 @@ app.post("/groups/create", async (req: Request, res: Response) => {
 app.post("/groups/join", async (req: Request, res: Response) => {
   const parsedData = z.object({
     username: z.string(),
-    id: z.string(),
+    name: z.string(),
   });
 
   const bodyData = parsedData.safeParse(req.body);
   if (!bodyData.success) {
-    res.status(400).json({ message: "Username or Group ID missing" });
+    res.status(400).json({ message: "Username or Group name missing" });
     return;
   }
 
@@ -72,8 +72,8 @@ app.post("/groups/join", async (req: Request, res: Response) => {
       });
     }
 
-    const updatedGroup = await Group.findByIdAndUpdate(
-      bodyData.data.id,
+    const updatedGroup = await Group.findOneAndUpdate(
+      {slug:bodyData.data.name},
       {
         $addToSet: { members: user._id },
       },
@@ -84,10 +84,10 @@ app.post("/groups/join", async (req: Request, res: Response) => {
       res.status(404).json({ message: "Group not found" });
       return;
     }
-
+    
     res
       .status(200)
-      .json({ message: "success", data: {groupId: updatedGroup._id, userId: user._id, username: user.username} });
+      .json({ message: "success", data: {groupId: updatedGroup._id, groupName: updatedGroup.slug, userId: user._id, username: user.username} });
   } catch (error) {
     res.status(500).json({ error: "Update failed" });
   }

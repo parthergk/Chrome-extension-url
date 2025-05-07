@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const tabContents = document.querySelectorAll(".tab-content");
   const statusIndicator = document.getElementById('status-indicator');
   const statusText = document.getElementById('status-text');
-  const groupIdInput = document.getElementById("group-id");
+  const groupNameInputCrt = document.getElementById("group-id-crt");
   const groupNameInput = document.getElementById("group-name");
   const usernameInput = document.getElementById("username");
   const createButton = document.getElementById("create-btn");
@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const leaveButton = document.getElementById("leave-btn");
   const groupInfoDiv = document.getElementById('group-info');
   const joinFormDiv = document.getElementById('join-form');
-  const currentGroupIdSpan = document.getElementById('current-group-id');
+  const currentGroupNameSpan = document.getElementById('current-group-name');
   const currentUsernameSpan = document.getElementById('current-username');
 
   let currentUrl = "";
@@ -222,11 +222,11 @@ document.addEventListener("DOMContentLoaded", function () {
           groupInfoDiv.style.display = "block";
 
           // Update group info
-          currentGroupIdSpan.textContent = response.groupId;
+          currentGroupNameSpan.textContent = response.groupName;
           currentUsernameSpan.textContent = response.username;
 
           // Pre-fill connection form
-          groupIdInput.value = response.groupId;
+          groupNameInputCrt.value = response.groupName;
           usernameInput.value = response.username;
         } else {
           // Update UI for disconnected state
@@ -239,8 +239,8 @@ document.addEventListener("DOMContentLoaded", function () {
           groupInfoDiv.style.display = "none";
 
           // Load saved connection info if available
-          chrome.storage.sync.get(["groupId", "username"], function (data) {
-            if (data.groupId) groupIdInput.value = data.groupId;
+          chrome.storage.sync.get(["groupName", "username"], function (data) {
+            if (data.groupName) groupNameInputCrt.value = data.groupName;
             if (data.username) usernameInput.value = data.username;
           });
         }
@@ -250,10 +250,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Join button event listener
   joinButton.addEventListener("click", function () {
-    const groupId = groupIdInput.value.trim();
+    const groupname = groupNameInputCrt.value.trim();
     const username = usernameInput.value.trim();
 
-    if (!groupId || !username) {
+    if (!groupname || !username) {
       showNotification("Please fill in all fields");
       return;
     }
@@ -261,7 +261,7 @@ document.addEventListener("DOMContentLoaded", function () {
     chrome.runtime.sendMessage(
       {
         action: "joinGroup",
-        groupId: groupId,
+        groupname: groupname,
         username: username,
       },
       function (response) {

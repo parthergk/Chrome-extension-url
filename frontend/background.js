@@ -21,7 +21,7 @@ async function createGroup(groupName) {
     return false
   }
 }
-async function joinGroup(gId, user) {
+async function joinGroup(grpName, user) {
   try {
     const response = await fetch("http://localhost:3000/groups/join", {
       method: "POST",
@@ -30,7 +30,7 @@ async function joinGroup(gId, user) {
       },
       body: JSON.stringify({
         username: user,
-        id: gId,
+        name: grpName,
       }),
     });
 
@@ -39,6 +39,7 @@ async function joinGroup(gId, user) {
       chrome.storage.sync.set({
         status: true,
         groupId: result.data.groupId,
+        groupName: result.data.groupName,
         userId: result.data.userId,
         username: result.data.username,
       });
@@ -97,7 +98,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     return true;
   }else if (request.action === "joinGroup") {
     (async () => {
-      const success = await joinGroup(request.groupId, request.username);
+      const success = await joinGroup(request.groupname, request.username);
       sendResponse({ success: success });
     })();
     return true;
@@ -108,11 +109,12 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     return true
   }else if (request.action === "getJoinStatus") {    
     chrome.storage.sync.get(
-      ['status','groupId', 'username'], 
-      function(data) { 
+      ['status', 'groupId', 'groupName', 'username'], 
+      function(data) {  
         sendResponse({
           joined: data.status || false,
           groupId: data.groupId || '',
+          groupName: data.groupName || '',
           username: data.username || ''
         });
       }

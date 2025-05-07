@@ -94,11 +94,11 @@ app.post("/groups/create", (req, res) => __awaiter(void 0, void 0, void 0, funct
 app.post("/groups/join", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const parsedData = zod_1.z.object({
         username: zod_1.z.string(),
-        id: zod_1.z.string(),
+        name: zod_1.z.string(),
     });
     const bodyData = parsedData.safeParse(req.body);
     if (!bodyData.success) {
-        res.status(400).json({ message: "Username or Group ID missing" });
+        res.status(400).json({ message: "Username or Group name missing" });
         return;
     }
     try {
@@ -109,7 +109,7 @@ app.post("/groups/join", (req, res) => __awaiter(void 0, void 0, void 0, functio
                 sharedUrls: [],
             });
         }
-        const updatedGroup = yield schema_1.Group.findByIdAndUpdate(bodyData.data.id, {
+        const updatedGroup = yield schema_1.Group.findOneAndUpdate({ slug: bodyData.data.name }, {
             $addToSet: { members: user._id },
         }, { new: true });
         if (!updatedGroup) {
@@ -118,7 +118,7 @@ app.post("/groups/join", (req, res) => __awaiter(void 0, void 0, void 0, functio
         }
         res
             .status(200)
-            .json({ message: "success", data: { groupId: updatedGroup._id, userId: user._id, username: user.username } });
+            .json({ message: "success", data: { groupId: updatedGroup._id, groupName: updatedGroup.slug, userId: user._id, username: user.username } });
     }
     catch (error) {
         res.status(500).json({ error: "Update failed" });
