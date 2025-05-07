@@ -89,6 +89,19 @@ async function shareUrlWithGroup(
   }
 }
 
+// Listen for installation event
+chrome.runtime.onInstalled.addListener(function() {
+  console.log('URL Bookmarker extension installed!');
+  
+  // Initialize storage with empty bookmarks array if it doesn't exist
+  chrome.storage.sync.get('bookmarks', function(data) {
+    if (!data.bookmarks) {
+      chrome.storage.sync.set({bookmarks: []});
+    }
+  });
+  
+});
+
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.action === "createGroup") {
     (async ()=>{
