@@ -55,6 +55,9 @@ document.addEventListener("DOMContentLoaded", function () {
     currentUrlElement.textContent = `${currentTitle}: ${currentUrl}`;
   });
 
+  //fetch existing bookmarks from server 
+  fetchBookmarks();
+
   // Load and display existing bookmarks
   loadBookmarks();
 
@@ -122,6 +125,20 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   });
 
+  function fetchBookmarks(){
+    chrome.runtime.sendMessage(
+      {
+        action: "fetchBookmarks",
+      },
+      function (response) {
+        if (response.success) {
+          checkConnectionStatus();
+          showNotification("Fetched all bookmarks");
+        }
+      }
+    );
+  }
+
   // Function to load bookmarks from storage
   function loadBookmarks() {
     chrome.storage.sync.get("bookmarks", function (data) {
@@ -184,27 +201,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  //create group listener
-  createButton.addEventListener("click", function () {
-    const groupName = groupNameInput.value.trim();    
-    if (!groupName) {
-      showNotification("Please fill in all fields");
-      return;
-    }
-
-    chrome.runtime.sendMessage(
-      {
-        action: "createGroup",
-        groupName: groupName,
-      },
-      function (response) {
-        if (response.success) {
-          showNotification("Created group");
-        }
-      }
-    );
-  });
-
+  //function to check joined status
   function checkConnectionStatus() {
     
     chrome.runtime.sendMessage(
@@ -248,6 +245,46 @@ document.addEventListener("DOMContentLoaded", function () {
     );
   }
 
+  // Function to show a temporary notification
+  function showNotification(message) {
+    console.log("notification from create group");
+    
+    const notification = document.createElement("div");
+    notification.className = "notification";
+    notification.textContent = message;
+
+    document.body.appendChild(notification);
+
+    // Remove notification after a delay
+    setTimeout(function () {
+      notification.style.opacity = "0";
+      setTimeout(function () {
+        document.body.removeChild(notification);
+      }, 500);
+    }, 2000);
+  }
+
+  //create group listener
+  createButton.addEventListener("click", function () {
+    const groupName = groupNameInput.value.trim();    
+    if (!groupName) {
+      showNotification("Please fill in all fields");
+      return;
+    }
+
+    chrome.runtime.sendMessage(
+      {
+        action: "createGroup",
+        groupName: groupName,
+      },
+      function (response) {
+        if (response.success) {
+          showNotification("Created group");
+        }
+      }
+    );
+  });
+
   // Join button event listener
   joinButton.addEventListener("click", function () {
     const groupname = groupNameInputCrt.value.trim();
@@ -283,22 +320,4 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // Function to show a temporary notification
-  function showNotification(message) {
-    console.log("notification from create group");
-    
-    const notification = document.createElement("div");
-    notification.className = "notification";
-    notification.textContent = message;
-
-    document.body.appendChild(notification);
-
-    // Remove notification after a delay
-    setTimeout(function () {
-      notification.style.opacity = "0";
-      setTimeout(function () {
-        document.body.removeChild(notification);
-      }, 500);
-    }, 2000);
-  }
 });

@@ -21,6 +21,7 @@ async function createGroup(groupName) {
     return false
   }
 }
+
 async function joinGroup(grpName, user) {
   try {
     const response = await fetch("http://localhost:3000/groups/join", {
@@ -89,6 +90,24 @@ async function shareUrlWithGroup(
   }
 }
 
+//fetched all bookmarks
+async function fetchBookmarksFromServer(id) {
+  try {
+    const res = await fetch(`http://localhost:3000/groups/${id}`);  
+    const data = await res.json();
+    console.log("data from server", data);
+    if (data.message === "success") {
+      chrome.storage.sync.set({ bookmarks: data.bookmarks });
+      return true
+    }else{
+      return false
+    }
+  } catch (error) {
+    console.error("Error fetching URLs:", error);
+    return false;
+  }
+}
+
 // Listen for installation event
 chrome.runtime.onInstalled.addListener(function() {
   console.log('URL Bookmarker extension installed!');
@@ -103,7 +122,17 @@ chrome.runtime.onInstalled.addListener(function() {
 });
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  if (request.action === "createGroup") {
+  if(request.action === "fetchBookmarks"){
+    chrome.storage.sync.get(['groupId'], function(data){
+      if (data.groupId) {
+      (async ()=>{
+        const success = await fetchBookmarksFromServer(data.groupId);
+        sendResponse({success:success});
+      })();
+    }
+    })
+    return true;
+  }else if (request.action === "createGroup") {
     (async ()=>{
       const success = await createGroup(request.groupName);
       sendResponse({ success: success });
