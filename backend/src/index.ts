@@ -125,19 +125,13 @@ app.post("/groups/share", async (req: Request, res: Response) => {
       category: bodyData.data.category,
     });
     
-    const updatedGroup = await Group.findByIdAndUpdate(
+    await Group.findByIdAndUpdate(
       bodyData.data.id,
       {
         $addToSet: { sharedUrls: newUrl._id },
       },
       { new: true }
     );
-
-    if (!updatedGroup) {
-      await Url.findByIdAndDelete(newUrl._id);
-      res.status(404).json({ message: "Group not found" });
-      return;
-    }
 
     if (bodyData.data.username) {
       await User.findOneAndUpdate(
@@ -182,7 +176,7 @@ app.get("/groups/:id", async (req: Request, res: Response) => {
       return;
     }
 
-    res.status(200).json({
+    res.status(200).json({message: "success",
       id: group._id,
       name: group.slug,
       members: group.members,

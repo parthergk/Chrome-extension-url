@@ -10,18 +10,18 @@ document.addEventListener("DOMContentLoaded", function () {
   // Get DOM elements - Group tab
   const tabButtons = document.querySelectorAll(".tab-btn");
   const tabContents = document.querySelectorAll(".tab-content");
-  const statusIndicator = document.getElementById('status-indicator');
-  const statusText = document.getElementById('status-text');
+  const statusIndicator = document.getElementById("status-indicator");
+  const statusText = document.getElementById("status-text");
   const groupNameInputCrt = document.getElementById("group-id-crt");
   const groupNameInput = document.getElementById("group-name");
   const usernameInput = document.getElementById("username");
   const createButton = document.getElementById("create-btn");
   const joinButton = document.getElementById("join-btn");
   const leaveButton = document.getElementById("leave-btn");
-  const groupInfoDiv = document.getElementById('group-info');
-  const joinFormDiv = document.getElementById('join-form');
-  const currentGroupNameSpan = document.getElementById('current-group-name');
-  const currentUsernameSpan = document.getElementById('current-username');
+  const groupInfoDiv = document.getElementById("group-info");
+  const joinFormDiv = document.getElementById("join-form");
+  const currentGroupNameSpan = document.getElementById("current-group-name");
+  const currentUsernameSpan = document.getElementById("current-username");
 
   let currentUrl = "";
   let currentTitle = "";
@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
     currentUrlElement.textContent = `${currentTitle}: ${currentUrl}`;
   });
 
-  //fetch existing bookmarks from server 
+  //fetch existing bookmarks from server
   fetchBookmarks();
 
   // Load and display existing bookmarks
@@ -101,31 +101,31 @@ document.addEventListener("DOMContentLoaded", function () {
     const category = categoryInput.value.trim();
 
     if (currentUrl && isConnected) {
-      
       chrome.runtime.sendMessage(
         {
-        action: "shareUrl",
-        url: currentUrl,
-        title: currentTitle,
-        notes: notes,
-        category: category,
-      },
-      function (response) {
-        if (response.success) {
-          showNotification("URL shared with group!");
+          action: "shareUrl",
+          url: currentUrl,
+          title: currentTitle,
+          notes: notes,
+          category: category,
+        },
+        function (response) {
+          if (response.success) {
+            showNotification("URL shared with group!");
 
-          // Clear form fields
-          notesInput.value = "";
-          categoryInput.value = "";
-        } else {
-          showNotification("Failed to share URL. Please check connection.");
+            fetchBookmarks();
+            // Clear form fields
+            notesInput.value = "";
+            categoryInput.value = "";
+          } else {
+            showNotification("Failed to share URL. Please check connection.");
+          }
         }
-      }
-    );
-  }
+      );
+    }
   });
 
-  function fetchBookmarks(){
+  function fetchBookmarks() {
     chrome.runtime.sendMessage(
       {
         action: "fetchBookmarks",
@@ -134,6 +134,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (response.success) {
           checkConnectionStatus();
           showNotification("Fetched all bookmarks");
+          loadBookmarks();
         }
       }
     );
@@ -141,6 +142,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Function to load bookmarks from storage
   function loadBookmarks() {
+    console.log("call from fetched");
+    
     chrome.storage.sync.get("bookmarks", function (data) {
       const bookmarks = data.bookmarks || [];
 
@@ -203,10 +206,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   //function to check joined status
   function checkConnectionStatus() {
-    
     chrome.runtime.sendMessage(
       { action: "getJoinStatus" },
-      function (response) {        
+      function (response) {
         isConnected = response.joined;
         if (isConnected) {
           // Update UI for connected state
@@ -248,7 +250,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Function to show a temporary notification
   function showNotification(message) {
     console.log("notification from create group");
-    
+
     const notification = document.createElement("div");
     notification.className = "notification";
     notification.textContent = message;
@@ -266,7 +268,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   //create group listener
   createButton.addEventListener("click", function () {
-    const groupName = groupNameInput.value.trim();    
+    const groupName = groupNameInput.value.trim();
     if (!groupName) {
       showNotification("Please fill in all fields");
       return;
@@ -319,5 +321,4 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   });
-
 });

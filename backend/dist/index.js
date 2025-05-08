@@ -153,14 +153,9 @@ app.post("/groups/share", (req, res) => __awaiter(void 0, void 0, void 0, functi
             notes: bodyData.data.notes,
             category: bodyData.data.category,
         });
-        const updatedGroup = yield schema_1.Group.findByIdAndUpdate(bodyData.data.id, {
+        yield schema_1.Group.findByIdAndUpdate(bodyData.data.id, {
             $addToSet: { sharedUrls: newUrl._id },
         }, { new: true });
-        if (!updatedGroup) {
-            yield schema_1.Url.findByIdAndDelete(newUrl._id);
-            res.status(404).json({ message: "Group not found" });
-            return;
-        }
         if (bodyData.data.username) {
             yield schema_1.User.findOneAndUpdate({ username: bodyData.data.username }, {
                 $addToSet: { sharedUrls: newUrl._id },
@@ -197,7 +192,7 @@ app.get("/groups/:id", (req, res) => __awaiter(void 0, void 0, void 0, function*
             res.status(404).json({ message: "Group not found" });
             return;
         }
-        res.status(200).json({
+        res.status(200).json({ message: "success",
             id: group._id,
             name: group.slug,
             members: group.members,

@@ -95,13 +95,13 @@ async function shareUrlWithGroup(
 
 //fetched all bookmarks
 async function fetchBookmarksFromServer(id) {
-  console.log("id from storage", id);
   try {
     const res = await fetch(`http://localhost:3000/groups/${id}`);  
     const data = await res.json();
-    console.log("data from server", data);
     if (data.message === "success") {
-      chrome.storage.sync.set({ bookmarks: data.bookmarks });
+      console.log("book marks", data.urls);
+      
+      chrome.storage.sync.set({ bookmarks: data.urls });
       return true
     }else{
       return false
