@@ -7,6 +7,15 @@ const urlSchema = new mongoose_1.Schema({
         type: String,
         required: true,
     },
+    title: {
+        type: String,
+    },
+    notes: {
+        type: String,
+    },
+    category: {
+        type: String,
+    }
 }, { timestamps: true });
 const userSchema = new mongoose_1.Schema({
     username: {

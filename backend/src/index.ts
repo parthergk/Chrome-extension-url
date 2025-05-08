@@ -73,7 +73,7 @@ app.post("/groups/join", async (req: Request, res: Response) => {
     }
 
     const updatedGroup = await Group.findOneAndUpdate(
-      {slug:bodyData.data.name},
+      { slug: bodyData.data.name },
       {
         $addToSet: { members: user._id },
       },
@@ -84,10 +84,18 @@ app.post("/groups/join", async (req: Request, res: Response) => {
       res.status(404).json({ message: "Group not found" });
       return;
     }
-    
+
     res
       .status(200)
-      .json({ message: "success", data: {groupId: updatedGroup._id, groupName: updatedGroup.slug, userId: user._id, username: user.username} });
+      .json({
+        message: "success",
+        data: {
+          groupId: updatedGroup._id,
+          groupName: updatedGroup.slug,
+          userId: user._id,
+          username: user.username,
+        },
+      });
   } catch (error) {
     res.status(500).json({ error: "Update failed" });
   }
@@ -96,6 +104,9 @@ app.post("/groups/join", async (req: Request, res: Response) => {
 app.post("/groups/share", async (req: Request, res: Response) => {
   const parsedData = z.object({
     url: z.string(),
+    title: z.string().optional(),
+    notes: z.string().optional(),
+    category: z.string().optional(),
     id: z.string(),
     username: z.string().optional(),
   });
@@ -107,8 +118,13 @@ app.post("/groups/share", async (req: Request, res: Response) => {
   }
 
   try {
-    const newUrl = await Url.create({ url: bodyData.data.url });
-
+    const newUrl = await Url.create({
+      url: bodyData.data.url,
+      title: bodyData.data.title,
+      notes: bodyData.data.notes,
+      category: bodyData.data.category,
+    });
+    
     const updatedGroup = await Group.findByIdAndUpdate(
       bodyData.data.id,
       {
@@ -141,44 +157,42 @@ app.post("/groups/share", async (req: Request, res: Response) => {
   }
 });
 
-app.get("/groups/:id", async(req: Request, res: Response) => {
+app.get("/groups/:id", async (req: Request, res: Response) => {
   const id = req.params.id;
 
   if (!id) {
-    res.status(400).json({message:"Group id is required"});
+    res.status(400).json({ message: "Group id is required" });
     return;
   }
   try {
     const group = await Group.findById(id)
       .populate({
-        path: 'sharedUrls',
-        model: 'Url',
-        select: 'url -_id'
+        path: "sharedUrls",
+        model: "Url",
+        select: "url title notes category -_id",
       })
       .populate({
-        path: 'members',
-        model: 'User',
-        select: 'username -_id'
+        path: "members",
+        model: "User",
+        select: "username -_id",
       });
-      
+
     if (!group) {
-      res.status(404).json({message: 'Group not found'});
+      res.status(404).json({ message: "Group not found" });
       return;
     }
-    
+
     res.status(200).json({
       id: group._id,
       name: group.slug,
       members: group.members,
       urls: group.sharedUrls,
     });
-    
   } catch (error) {
     console.error("Error fetching group:", error);
-    res.status(500).json({error: "Server error while retrieving group"});
+    res.status(500).json({ error: "Server error while retrieving group" });
   }
 });
-
 
 function main() {
   return mongoose.connect(

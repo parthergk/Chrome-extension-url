@@ -2,6 +2,9 @@ import mongoose, { model, Schema, Document } from "mongoose";
 
 export interface IUrl extends Document {
   url: string;
+  title: string;
+  notes: string;
+  category: string;
 }
 
 export interface IUser extends Document {
@@ -21,6 +24,15 @@ const urlSchema = new Schema<IUrl>(
       type: String,
       required: true,
     },
+    title: {
+      type: String,
+    },
+    notes: {
+      type: String,
+    },
+    category: {
+      type: String,
+    }
   },
   { timestamps: true }
 );

@@ -118,7 +118,15 @@ app.post("/groups/join", (req, res) => __awaiter(void 0, void 0, void 0, functio
         }
         res
             .status(200)
-            .json({ message: "success", data: { groupId: updatedGroup._id, groupName: updatedGroup.slug, userId: user._id, username: user.username } });
+            .json({
+            message: "success",
+            data: {
+                groupId: updatedGroup._id,
+                groupName: updatedGroup.slug,
+                userId: user._id,
+                username: user.username,
+            },
+        });
     }
     catch (error) {
         res.status(500).json({ error: "Update failed" });
@@ -127,6 +135,9 @@ app.post("/groups/join", (req, res) => __awaiter(void 0, void 0, void 0, functio
 app.post("/groups/share", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const parsedData = zod_1.z.object({
         url: zod_1.z.string(),
+        title: zod_1.z.string().optional(),
+        notes: zod_1.z.string().optional(),
+        category: zod_1.z.string().optional(),
         id: zod_1.z.string(),
         username: zod_1.z.string().optional(),
     });
@@ -136,7 +147,12 @@ app.post("/groups/share", (req, res) => __awaiter(void 0, void 0, void 0, functi
         return;
     }
     try {
-        const newUrl = yield schema_1.Url.create({ url: bodyData.data.url });
+        const newUrl = yield schema_1.Url.create({
+            url: bodyData.data.url,
+            title: bodyData.data.title,
+            notes: bodyData.data.notes,
+            category: bodyData.data.category,
+        });
         const updatedGroup = yield schema_1.Group.findByIdAndUpdate(bodyData.data.id, {
             $addToSet: { sharedUrls: newUrl._id },
         }, { new: true });
@@ -168,17 +184,17 @@ app.get("/groups/:id", (req, res) => __awaiter(void 0, void 0, void 0, function*
     try {
         const group = yield schema_1.Group.findById(id)
             .populate({
-            path: 'sharedUrls',
-            model: 'Url',
-            select: 'url -_id'
+            path: "sharedUrls",
+            model: "Url",
+            select: "url title notes category -_id",
         })
             .populate({
-            path: 'members',
-            model: 'User',
-            select: 'username -_id'
+            path: "members",
+            model: "User",
+            select: "username -_id",
         });
         if (!group) {
-            res.status(404).json({ message: 'Group not found' });
+            res.status(404).json({ message: "Group not found" });
             return;
         }
         res.status(200).json({

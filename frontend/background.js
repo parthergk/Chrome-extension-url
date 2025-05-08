@@ -74,6 +74,9 @@ async function shareUrlWithGroup(
         id: groupId,
         username: username,
         url: url,
+        title: title,
+        notes: notes,
+        category: category
       }),
     });
 
@@ -92,6 +95,7 @@ async function shareUrlWithGroup(
 
 //fetched all bookmarks
 async function fetchBookmarksFromServer(id) {
+  console.log("id from storage", id);
   try {
     const res = await fetch(`http://localhost:3000/groups/${id}`);  
     const data = await res.json();
