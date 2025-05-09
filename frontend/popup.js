@@ -75,6 +75,8 @@ document.addEventListener("DOMContentLoaded", function () {
           checkConnectionStatus();
           showNotification("Fetched all bookmarks");
           loadBookmarks();
+        }else{
+          showNotification(response.message || "No group ID found");
         }
       }
     );
@@ -152,6 +154,9 @@ document.addEventListener("DOMContentLoaded", function () {
               loadBookmarks();
             });
           });
+          showNotification("Url deleted");
+        }else{
+          showNotification("Something went wrong");
         }
       }
     );
@@ -222,7 +227,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }, 2000);
   }
 
-  //create group listener
+  // create group listener
   createButton.addEventListener("click", function () {
     const groupName = groupNameInput.value.trim();
     if (!groupName) {
@@ -238,6 +243,8 @@ document.addEventListener("DOMContentLoaded", function () {
       function (response) {
         if (response.success) {
           showNotification("Created group");
+        }else{
+          showNotification("Not created something went wrong");
         }
       }
     );
@@ -264,6 +271,8 @@ document.addEventListener("DOMContentLoaded", function () {
           checkConnectionStatus();
           fetchBookmarks();
           showNotification("Joined group");
+        }else{
+          showNotification("Not joined something went wrong");
         }
       }
     );
@@ -292,7 +301,7 @@ document.addEventListener("DOMContentLoaded", function () {
             notesInput.value = "";
             categoryInput.value = "";
           } else {
-            showNotification("Failed to share URL. Please check connection.");
+            showNotification(response.message ||"Failed to share URL. Please check connection.");
           }
         }
       );

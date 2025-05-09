@@ -16,7 +16,9 @@ app.post("/groups/create", async (req: Request, res: Response) => {
 
   const bodyData = parsedData.safeParse(req.body);
   if (!bodyData.success) {
-    res.status(400).json({ message: "Please enter the group name" });
+    res
+      .status(400)
+      .json({ status: "error", message: "Please enter the group name" });
     return;
   }
 
@@ -47,7 +49,13 @@ app.post("/groups/create", async (req: Request, res: Response) => {
       groupId: savedGroup._id,
     });
   } catch (error) {
-    res.status(500).json({ error: "Group not created, please try again" });
+    console.error("Error in /groups/create:", error);
+    res
+      .status(500)
+      .json({
+        status: "error",
+        message: "Group not created, please try again",
+      });
   }
 });
 
@@ -59,7 +67,9 @@ app.post("/groups/join", async (req: Request, res: Response) => {
 
   const bodyData = parsedData.safeParse(req.body);
   if (!bodyData.success) {
-    res.status(400).json({ message: "Username or Group name missing" });
+    res
+      .status(400)
+      .json({ status: "error", message: "Username or Group name missing" });
     return;
   }
 
@@ -81,23 +91,22 @@ app.post("/groups/join", async (req: Request, res: Response) => {
     );
 
     if (!updatedGroup) {
-      res.status(404).json({ message: "Group not found" });
+      res.status(404).json({ status: "error", message: "Group not found" });
       return;
     }
 
-    res
-      .status(200)
-      .json({
-        message: "success",
-        data: {
-          groupId: updatedGroup._id,
-          groupName: updatedGroup.slug,
-          userId: user._id,
-          username: user.username,
-        },
-      });
+    res.status(200).json({
+      message: "success",
+      data: {
+        groupId: updatedGroup._id,
+        groupName: updatedGroup.slug,
+        userId: user._id,
+        username: user.username,
+      },
+    });
   } catch (error) {
-    res.status(500).json({ error: "Update failed" });
+    console.error("Error in /groups/join", error);
+    res.status(500).json({ status: "error", message: "Update failed" });
   }
 });
 
@@ -113,7 +122,9 @@ app.post("/groups/share", async (req: Request, res: Response) => {
 
   const bodyData = parsedData.safeParse(req.body);
   if (!bodyData.success) {
-    res.status(400).json({ message: "Please enter a url and group ID" });
+    res
+      .status(400)
+      .json({ status: "error", message: "Please enter a url and group ID" });
     return;
   }
 
@@ -124,7 +135,7 @@ app.post("/groups/share", async (req: Request, res: Response) => {
       notes: bodyData.data.notes,
       category: bodyData.data.category,
     });
-    
+
     await Group.findByIdAndUpdate(
       bodyData.data.id,
       {
@@ -147,7 +158,10 @@ app.post("/groups/share", async (req: Request, res: Response) => {
       urlId: newUrl._id,
     });
   } catch (error) {
-    res.status(500).json({ error: "URL not shared, please try again" });
+    console.error("Error in /groups/share", error);
+    res
+      .status(500)
+      .json({ status: "error", message: "URL not shared, please try again" });
   }
 });
 
@@ -176,25 +190,33 @@ app.get("/groups/:id", async (req: Request, res: Response) => {
       return;
     }
 
-    res.status(200).json({message: "success",
-      id: group._id,
-      name: group.slug,
-      members: group.members,
-      urls: group.sharedUrls,
-    });
+    res
+      .status(200)
+      .json({
+        message: "success",
+        id: group._id,
+        name: group.slug,
+        members: group.members,
+        urls: group.sharedUrls,
+      });
   } catch (error) {
-    console.error("Error fetching group:", error);
-    res.status(500).json({ error: "Server error while retrieving group" });
+    console.error("Error in /groups/:", error);
+    res
+      .status(500)
+      .json({ status: "error", error: "Server error while retrieving group" });
   }
 });
 
-app.delete('/bookmark/:id', async (req:Request, res:Response) => {
+app.delete("/bookmark/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     await Url.findByIdAndDelete(id);
-    res.status(200).json({ message: 'success' });
+    res.status(200).json({ message: "success" });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to delete bookmark' });
+    console.error("Error in /bookmark/:", error);
+    res
+      .status(500)
+      .json({ status: "error", message: "Failed to delete bookmark" });
   }
 });
 function main() {

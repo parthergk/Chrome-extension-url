@@ -146,6 +146,8 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
           const success = await fetchBookmarksFromServer(data.groupId);
           sendResponse({ success: success });
         })();
+      }else{
+        sendResponse({success: false, message: "No group ID found"});
       }
     });
     return true;
@@ -197,6 +199,8 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
           );
           sendResponse({ success: success });
         })();
+      }else{
+        sendResponse({success: false, message: "GroupId or Username not found"})
       }
     });
     return true;
