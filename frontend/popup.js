@@ -64,6 +64,8 @@ document.addEventListener("DOMContentLoaded", function () {
   checkConnectionStatus();
 
   function fetchBookmarks() {
+    console.log("fetched Bookmarks");
+    
     chrome.runtime.sendMessage(
       {
         action: "fetchBookmarks",
@@ -80,7 +82,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Function to load bookmarks from storage
   function loadBookmarks() {
-    console.log("call from fetched");
+    console.log("Load Bookmarks");
 
     chrome.storage.sync.get("bookmarks", function (data) {
       const bookmarks = data.bookmarks || [];
@@ -204,7 +206,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Function to show a temporary notification
   function showNotification(message) {
-    console.log("notification from create group");
 
     const notification = document.createElement("div");
     notification.className = "notification";
@@ -261,6 +262,7 @@ document.addEventListener("DOMContentLoaded", function () {
       function (response) {
         if (response.success) {
           checkConnectionStatus();
+          fetchBookmarks();
           showNotification("Joined group");
         }
       }
@@ -303,6 +305,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (response.success) {
         chrome.storage.sync.set({ bookmarks: [] }, function () {
           console.log("Bookmarks cleared after leaving the group.");
+          loadBookmarks();
         });
         checkConnectionStatus();
         showNotification("Leave from group");
