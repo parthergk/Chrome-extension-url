@@ -181,7 +181,7 @@ app.get("/groups/:id", (req, res) => __awaiter(void 0, void 0, void 0, function*
             .populate({
             path: "sharedUrls",
             model: "Url",
-            select: "url title notes category -_id",
+            select: "url title notes category",
         })
             .populate({
             path: "members",
@@ -202,6 +202,16 @@ app.get("/groups/:id", (req, res) => __awaiter(void 0, void 0, void 0, function*
     catch (error) {
         console.error("Error fetching group:", error);
         res.status(500).json({ error: "Server error while retrieving group" });
+    }
+}));
+app.delete('/bookmark/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        yield schema_1.Url.findByIdAndDelete(id);
+        res.status(200).json({ message: 'success' });
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Failed to delete bookmark' });
     }
 }));
 function main() {

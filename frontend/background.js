@@ -1,24 +1,24 @@
 async function createGroup(groupName) {
   try {
-    const response = await fetch("http://localhost:3000/groups/create",{
-      method:"POST",
+    const response = await fetch("http://localhost:3000/groups/create", {
+      method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body:JSON.stringify({
-        name:groupName
-      })  
+      body: JSON.stringify({
+        name: groupName,
+      }),
     });
 
     const result = await response.json();
-    if (result.message==="success") {
-      return true
-    }else{
-      return false
+    if (result.message === "success") {
+      return true;
+    } else {
+      return false;
     }
   } catch (error) {
     console.error("Error joining group:", error);
-    return false
+    return false;
   }
 }
 
@@ -63,7 +63,6 @@ async function shareUrlWithGroup(
   groupId,
   username
 ) {
-  
   try {
     const response = await fetch("http://localhost:3000/groups/share", {
       method: "POST",
@@ -76,7 +75,7 @@ async function shareUrlWithGroup(
         url: url,
         title: title,
         notes: notes,
-        category: category
+        category: category,
       }),
     });
 
@@ -93,18 +92,17 @@ async function shareUrlWithGroup(
   }
 }
 
-//fetched all bookmarks
+// fetched all bookmarks
 async function fetchBookmarksFromServer(id) {
   try {
-    const res = await fetch(`http://localhost:3000/groups/${id}`);  
+    const res = await fetch(`http://localhost:3000/groups/${id}`);
     const data = await res.json();
+
     if (data.message === "success") {
-      console.log("book marks", data.urls);
-      
       chrome.storage.sync.set({ bookmarks: data.urls });
-      return true
-    }else{
-      return false
+      return true;
+    } else {
+      return false;
     }
   } catch (error) {
     console.error("Error fetching URLs:", error);
@@ -112,56 +110,74 @@ async function fetchBookmarksFromServer(id) {
   }
 }
 
+// Delete url
+async function deleteBookmark(id) {
+  try {
+    const resJson = await fetch(`http://localhost:3000/bookmark/${id}`, {
+      method: "DELETE",
+    });
+    const res = await resJson.json();
+    if (res.message === "success") {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    return false;
+  }
+}
 // Listen for installation event
-chrome.runtime.onInstalled.addListener(function() {
-  console.log('URL Bookmarker extension installed!');
-  
+chrome.runtime.onInstalled.addListener(function () {
+  console.log("URL Bookmarker extension installed!");
+
   // Initialize storage with empty bookmarks array if it doesn't exist
-  chrome.storage.sync.get('bookmarks', function(data) {
+  chrome.storage.sync.get("bookmarks", function (data) {
     if (!data.bookmarks) {
-      chrome.storage.sync.set({bookmarks: []});
+      chrome.storage.sync.set({ bookmarks: [] });
     }
   });
-  
 });
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  if(request.action === "fetchBookmarks"){
-    chrome.storage.sync.get(['groupId'], function(data){
+  if (request.action === "fetchBookmarks") {
+    chrome.storage.sync.get(["groupId"], function (data) {
       if (data.groupId) {
-      (async ()=>{
-        const success = await fetchBookmarksFromServer(data.groupId);
-        sendResponse({success:success});
-      })();
-    }
-    })
+        (async () => {
+          const success = await fetchBookmarksFromServer(data.groupId);
+          sendResponse({ success: success });
+        })();
+      }
+    });
     return true;
-  }else if (request.action === "createGroup") {
-    (async ()=>{
+  } else if (request.action === "createGroup") {
+    (async () => {
       const success = await createGroup(request.groupName);
       sendResponse({ success: success });
     })();
     return true;
-  }else if (request.action === "joinGroup") {
+  } else if (request.action === "joinGroup") {
     (async () => {
       const success = await joinGroup(request.groupname, request.username);
       sendResponse({ success: success });
     })();
     return true;
   } else if (request.action === "leaveGroup") {
-    chrome.storage.sync.remove(['status','groupId', 'userId', 'username'], function () {
-      sendResponse({ success: true });
-    });
-    return true
-  }else if (request.action === "getJoinStatus") {    
+    chrome.storage.sync.remove(
+      ["status", "groupId", "userId", "username"],
+      function () {
+        sendResponse({ success: true });
+      }
+    );
+    return true;
+  } else if (request.action === "getJoinStatus") {
     chrome.storage.sync.get(
-      ['status', 'groupId', 'groupName', 'username'], 
-      function(data) {  
+      ["status", "groupId", "groupName", "username"],
+      function (data) {
         sendResponse({
           joined: data.status || false,
-          groupId: data.groupId || '',
-          groupName: data.groupName || '',
-          username: data.username || ''
+          groupId: data.groupId || "",
+          groupName: data.groupName || "",
+          username: data.username || "",
         });
       }
     );
@@ -183,6 +199,12 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         })();
       }
     });
+    return true;
+  } else if (request.action === "deleteUrl") {
+    (async () => {
+      const success = await deleteBookmark(request.urlId);
+      sendResponse({ success: success });
+    })();
     return true;
   }
 });

@@ -163,7 +163,7 @@ app.get("/groups/:id", async (req: Request, res: Response) => {
       .populate({
         path: "sharedUrls",
         model: "Url",
-        select: "url title notes category -_id",
+        select: "url title notes category",
       })
       .populate({
         path: "members",
@@ -188,6 +188,15 @@ app.get("/groups/:id", async (req: Request, res: Response) => {
   }
 });
 
+app.delete('/bookmark/:id', async (req:Request, res:Response) => {
+  try {
+    const { id } = req.params;
+    await Url.findByIdAndDelete(id);
+    res.status(200).json({ message: 'success' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete bookmark' });
+  }
+});
 function main() {
   return mongoose.connect(
     "mongodb+srv://gauravKumar:gaurav123@cluster0.swj1o.mongodb.net/?retryWrites=true&w=majority"

@@ -111,7 +111,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Function to load bookmarks from storage
   function loadBookmarks() {
     console.log("call from fetched");
-    
+
     chrome.storage.sync.get("bookmarks", function (data) {
       const bookmarks = data.bookmarks || [];
 
@@ -139,7 +139,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 ? `<span class="bookmark-category">${bookmark.category}</span>`
                 : ""
             }
-            <button class="delete-btn" data-index="${index}">Delete</button>
+            <button class="delete-btn" data-index="${index}" data-urlId="${
+          bookmark._id
+        }">Delete</button>
           `;
 
         bookmarkItem.innerHTML = bookmarkContent;
@@ -150,26 +152,37 @@ document.addEventListener("DOMContentLoaded", function () {
       document.querySelectorAll(".delete-btn").forEach(function (button) {
         button.addEventListener("click", function (e) {
           const index = parseInt(e.target.getAttribute("data-index"));
-          deleteBookmark(index);
+          const bookmarkId = e.target.getAttribute("data-urlId");
+          deleteBookmark(index, bookmarkId);
         });
       });
     });
   }
 
   // Function to delete a bookmark
-  function deleteBookmark(index) {
-    chrome.storage.sync.get("bookmarks", function (data) {
-      let bookmarks = data.bookmarks || [];
+  function deleteBookmark(index, id) {
+    chrome.runtime.sendMessage(
+      {
+        action: "deleteUrl",
+        urlId: id
+      },
+      function (response) {
+        if (response.success) {
+          chrome.storage.sync.get("bookmarks", function (data) {
+            let bookmarks = data.bookmarks || [];
 
-      // Remove the bookmark at the specified index
-      bookmarks.splice(index, 1);
+            // Remove the bookmark at the specified index
+            bookmarks.splice(index, 1);
 
-      // Save the updated bookmarks
-      chrome.storage.sync.set({ bookmarks: bookmarks }, function () {
-        // Update the display
-        loadBookmarks();
-      });
-    });
+            // Save the updated bookmarks
+            chrome.storage.sync.set({ bookmarks: bookmarks }, function () {
+              // Update the display
+              loadBookmarks();
+            });
+          });
+        }
+      }
+    );
   }
 
   //function to check joined status
@@ -198,13 +211,12 @@ document.addEventListener("DOMContentLoaded", function () {
           groupNameInputCrt.value = response.groupName;
           usernameInput.value = response.username;
         } else {
-
           // Update UI for disconnected state
           tooltip.textContent = "Join a group to share";
           statusIndicator.className = "leaved";
           statusText.textContent = "Leaved";
           shareButton.disabled = true;
-          tooltip.style.display = "block"
+          tooltip.style.display = "block";
           joinButton.style.display = "block";
           leaveButton.style.display = "none";
           joinFormDiv.style.display = "block";
