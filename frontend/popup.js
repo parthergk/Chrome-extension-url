@@ -63,36 +63,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   checkConnectionStatus();
 
-  // Share button event listener
-  shareButton.addEventListener("click", function () {
-    const notes = notesInput.value.trim();
-    const category = categoryInput.value.trim();
-
-    if (currentUrl && isConnected) {
-      chrome.runtime.sendMessage(
-        {
-          action: "shareUrl",
-          url: currentUrl,
-          title: currentTitle,
-          notes: notes,
-          category: category,
-        },
-        function (response) {
-          if (response.success) {
-            showNotification("URL shared with group!");
-
-            fetchBookmarks();
-            // Clear form fields
-            notesInput.value = "";
-            categoryInput.value = "";
-          } else {
-            showNotification("Failed to share URL. Please check connection.");
-          }
-        }
-      );
-    }
-  });
-
   function fetchBookmarks() {
     chrome.runtime.sendMessage(
       {
@@ -164,7 +134,7 @@ document.addEventListener("DOMContentLoaded", function () {
     chrome.runtime.sendMessage(
       {
         action: "deleteUrl",
-        urlId: id
+        urlId: id,
       },
       function (response) {
         if (response.success) {
@@ -297,10 +267,43 @@ document.addEventListener("DOMContentLoaded", function () {
     );
   });
 
+  // Share button event listener
+  shareButton.addEventListener("click", function () {
+    const notes = notesInput.value.trim();
+    const category = categoryInput.value.trim();
+
+    if (currentUrl && isConnected) {
+      chrome.runtime.sendMessage(
+        {
+          action: "shareUrl",
+          url: currentUrl,
+          title: currentTitle,
+          notes: notes,
+          category: category,
+        },
+        function (response) {
+          if (response.success) {
+            showNotification("URL shared with group!");
+
+            fetchBookmarks();
+            // Clear form fields
+            notesInput.value = "";
+            categoryInput.value = "";
+          } else {
+            showNotification("Failed to share URL. Please check connection.");
+          }
+        }
+      );
+    }
+  });
+
   // Leave button event listener
   leaveButton.addEventListener("click", function () {
     chrome.runtime.sendMessage({ action: "leaveGroup" }, function (response) {
       if (response.success) {
+        chrome.storage.sync.set({ bookmarks: [] }, function () {
+          console.log("Bookmarks cleared after leaving the group.");
+        });
         checkConnectionStatus();
         showNotification("Leave from group");
       }
