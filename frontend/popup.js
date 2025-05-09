@@ -3,8 +3,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const currentUrlElement = document.getElementById("current-url");
   const notesInput = document.getElementById("notes");
   const categoryInput = document.getElementById("category");
-  const saveButton = document.getElementById("save-btn");
   const shareButton = document.getElementById("share-btn");
+  const tooltip = document.getElementById("tool-tip");
   const bookmarksList = document.getElementById("bookmarks-list");
 
   // Get DOM elements - Group tab
@@ -62,38 +62,6 @@ document.addEventListener("DOMContentLoaded", function () {
   loadBookmarks();
 
   checkConnectionStatus();
-
-  // Save button event listener
-  saveButton.addEventListener("click", function () {
-    const notes = notesInput.value.trim();
-    const category = categoryInput.value.trim();
-
-    if (currentUrl) {
-      // Create bookmark object
-      const bookmark = {
-        url: currentUrl,
-        title: currentTitle,
-        notes: notes,
-        category: category,
-        date: new Date().toLocaleString(),
-      };
-
-      // Save to Chrome storage
-      chrome.storage.sync.get("bookmarks", function (data) {
-        let bookmarks = data.bookmarks || [];
-        bookmarks.push(bookmark);
-
-        chrome.storage.sync.set({ bookmarks: bookmarks }, function () {
-          // Clear form fields
-          notesInput.value = "";
-          categoryInput.value = "";
-
-          // Update the display
-          loadBookmarks();
-        });
-      });
-    }
-  });
 
   // Share button event listener
   shareButton.addEventListener("click", function () {
@@ -215,6 +183,7 @@ document.addEventListener("DOMContentLoaded", function () {
           statusIndicator.className = "joined";
           statusText.textContent = "Joined";
           shareButton.disabled = false;
+          tooltip.disabled = true;
           joinButton.style.display = "none";
           leaveButton.style.display = "block";
           joinFormDiv.style.display = "none";
@@ -232,6 +201,7 @@ document.addEventListener("DOMContentLoaded", function () {
           statusIndicator.className = "leaved";
           statusText.textContent = "Leaved";
           shareButton.disabled = true;
+          tooltip.disabled = false;
           joinButton.style.display = "block";
           leaveButton.style.display = "none";
           joinFormDiv.style.display = "block";

@@ -71,6 +71,7 @@ body {
   
   .button-group {
     display: flex;
+    flex-direction: column;
     gap: 10px;
     margin-bottom: 15px;
   }
