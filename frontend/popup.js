@@ -183,7 +183,6 @@ document.addEventListener("DOMContentLoaded", function () {
           statusIndicator.className = "joined";
           statusText.textContent = "Joined";
           shareButton.disabled = false;
-          tooltip.disabled = true;
           joinButton.style.display = "none";
           leaveButton.style.display = "block";
           joinFormDiv.style.display = "none";
@@ -193,15 +192,19 @@ document.addEventListener("DOMContentLoaded", function () {
           currentGroupNameSpan.textContent = response.groupName;
           currentUsernameSpan.textContent = response.username;
 
+          tooltip.textContent = `Joined Group: ${response.groupName}`;
+
           // Pre-fill connection form
           groupNameInputCrt.value = response.groupName;
           usernameInput.value = response.username;
         } else {
+
           // Update UI for disconnected state
+          tooltip.textContent = "Join a group to share";
           statusIndicator.className = "leaved";
           statusText.textContent = "Leaved";
           shareButton.disabled = true;
-          tooltip.disabled = false;
+          tooltip.style.display = "block"
           joinButton.style.display = "block";
           leaveButton.style.display = "none";
           joinFormDiv.style.display = "block";
