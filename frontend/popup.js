@@ -306,7 +306,7 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
           showNotification(
             response.message ||
-              "Failed to share URL. Please check connection."
+              "Failed to share URL."
           );
         }
       }

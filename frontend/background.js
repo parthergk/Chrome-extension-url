@@ -197,7 +197,11 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             data.groupId,
             data.username
           );
-          sendResponse({ success: success });
+          if (success) {
+            sendResponse({ success: success });
+          }else{
+            sendResponse({success: false, message: "URL already shared."})
+          }
         })();
       }else{
         sendResponse({success: false, message: "GroupId or Username not found"})

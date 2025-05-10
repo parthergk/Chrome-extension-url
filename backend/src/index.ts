@@ -50,12 +50,10 @@ app.post("/groups/create", async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error in /groups/create:", error);
-    res
-      .status(500)
-      .json({
-        status: "error",
-        message: "Group not created, please try again",
-      });
+    res.status(500).json({
+      status: "error",
+      message: "Group not created, please try again",
+    });
   }
 });
 
@@ -112,11 +110,12 @@ app.post("/groups/join", async (req: Request, res: Response) => {
 
 app.post("/groups/share", async (req: Request, res: Response) => {
   const parsedData = z.object({
-    url: z.string(),
+    groupName: z.string(),
+    url: z.string().url(), // validate URL format
     title: z.string().optional(),
     notes: z.string().optional(),
     category: z.string().optional(),
-    id: z.string(),
+    id: z.string(), // group ID
     username: z.string().optional(),
   });
 
@@ -124,44 +123,73 @@ app.post("/groups/share", async (req: Request, res: Response) => {
   if (!bodyData.success) {
     res
       .status(400)
-      .json({ status: "error", message: "Please enter a url and group ID" });
+      .json({
+        status: "error",
+        message: "Please enter a valid URL and group ID",
+      });
     return;
   }
 
   try {
-    const newUrl = await Url.create({
-      url: bodyData.data.url,
-      title: bodyData.data.title,
-      notes: bodyData.data.notes,
-      category: bodyData.data.category,
-    });
+    const {
+      url,
+      title,
+      notes,
+      category,
+      id: groupId,
+      username,
+    } = bodyData.data;
 
+    // 1. Check if URL already exists
+    let urlDoc = await Url.findOne({ url });
+
+    if (urlDoc) {
+      // 2. If it exists, check if it's already shared in the group
+      const alreadyShared = await Group.findOne({
+        _id: groupId,
+        sharedUrls: { $in: [urlDoc._id] },
+      });
+
+      if (alreadyShared) {
+        res.status(400).json({
+          status: "error",
+          message: "URL already shared in this group.",
+        });
+        return;
+      }
+    } else {
+      // 3. Create URL if it doesn't exist
+      urlDoc = await Url.create({ url, title, notes, category });
+    }
+
+    // 4. Add URL to the group (prevent duplicates with $addToSet)
     await Group.findByIdAndUpdate(
-      bodyData.data.id,
-      {
-        $addToSet: { sharedUrls: newUrl._id },
-      },
+      groupId,
+      { $addToSet: { sharedUrls: urlDoc._id } },
       { new: true }
     );
 
-    if (bodyData.data.username) {
+    // 5. Also add to user, if username provided
+    if (username) {
       await User.findOneAndUpdate(
-        { username: bodyData.data.username },
-        {
-          $addToSet: { sharedUrls: newUrl._id },
-        }
+        { username },
+        { $addToSet: { sharedUrls: urlDoc._id } }
       );
     }
 
-    res.status(200).json({
-      message: "success",
-      urlId: newUrl._id,
+     res.status(200).json({
+      status: "success",
+      message: "URL shared successfully.",
+      urlId: urlDoc._id,
     });
+    return;
   } catch (error) {
-    console.error("Error in /groups/share", error);
-    res
-      .status(500)
-      .json({ status: "error", message: "URL not shared, please try again" });
+    console.error("Error in /groups/share:", error);
+    res.status(500).json({
+      status: "error",
+      message: "URL not shared, please try again.",
+    });
+    return;
   }
 });
 
@@ -190,15 +218,13 @@ app.get("/groups/:id", async (req: Request, res: Response) => {
       return;
     }
 
-    res
-      .status(200)
-      .json({
-        message: "success",
-        id: group._id,
-        name: group.slug,
-        members: group.members,
-        urls: group.sharedUrls,
-      });
+    res.status(200).json({
+      message: "success",
+      id: group._id,
+      name: group.slug,
+      members: group.members,
+      urls: group.sharedUrls,
+    });
   } catch (error) {
     console.error("Error in /groups/:", error);
     res
