@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function fetchBookmarks() {
     console.log("fetched Bookmarks");
-    
+
     chrome.runtime.sendMessage(
       {
         action: "fetchBookmarks",
@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", function () {
           checkConnectionStatus();
           showNotification("Fetched all bookmarks");
           loadBookmarks();
-        }else{
+        } else {
           showNotification(response.message || "No group ID found");
         }
       }
@@ -98,6 +98,12 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
+      function escapeHTML(str) {
+        const div = document.createElement("div");
+        div.textContent = str;
+        return div.innerHTML;
+      }
+
       // Display each bookmark
       bookmarks.forEach(function (bookmark, index) {
         const bookmarkItem = document.createElement("div");
@@ -107,10 +113,10 @@ document.addEventListener("DOMContentLoaded", function () {
             <a href="${bookmark.url}" class="bookmark-url" target="_blank">${
           bookmark.title
         }</a>
-            <div class="bookmark-notes">${bookmark.notes || "No notes"}</div>
+            <div class="bookmark-notes">${escapeHTML(bookmark.notes) || "No notes"}</div>
             ${
               bookmark.category
-                ? `<span class="bookmark-category">${bookmark.category}</span>`
+                ? `<span class="bookmark-category">${escapeHTML(bookmark.category)}</span>`
                 : ""
             }
             <button class="delete-btn" data-index="${index}" data-urlId="${
@@ -155,7 +161,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
           });
           showNotification("Url deleted");
-        }else{
+        } else {
           showNotification("Something went wrong");
         }
       }
@@ -211,7 +217,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Function to show a temporary notification
   function showNotification(message) {
-
     const notification = document.createElement("div");
     notification.className = "notification";
     notification.textContent = message;
@@ -243,7 +248,7 @@ document.addEventListener("DOMContentLoaded", function () {
       function (response) {
         if (response.success) {
           showNotification("Created group");
-        }else{
+        } else {
           showNotification("Not created something went wrong");
         }
       }
@@ -271,7 +276,7 @@ document.addEventListener("DOMContentLoaded", function () {
           checkConnectionStatus();
           fetchBookmarks();
           showNotification("Joined group");
-        }else{
+        } else {
           showNotification("Not joined something went wrong");
         }
       }
@@ -279,34 +284,48 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // Share button event listener
-  shareButton.addEventListener("click", function () {
-    const notes = notesInput.value.trim();
-    const category = categoryInput.value.trim();
+  const handleShare = function () {
+  const notes = notesInput.value.trim();
+  const category = categoryInput.value.trim();
 
-    if (currentUrl && isConnected) {
-      chrome.runtime.sendMessage(
-        {
-          action: "shareUrl",
-          url: currentUrl,
-          title: currentTitle,
-          notes: notes,
-          category: category,
-        },
-        function (response) {
-          if (response.success) {
-            showNotification("URL shared with group!");
-
-            fetchBookmarks();
-            // Clear form fields
-            notesInput.value = "";
-            categoryInput.value = "";
-          } else {
-            showNotification(response.message ||"Failed to share URL. Please check connection.");
-          }
+  if (currentUrl && isConnected) {
+    chrome.runtime.sendMessage(
+      {
+        action: "shareUrl",
+        url: currentUrl,
+        title: currentTitle,
+        notes: notes,
+        category: category,
+      },
+      function (response) {
+        if (response.success) {
+          showNotification("URL shared with group!");
+          fetchBookmarks();
+          notesInput.value = "";
+          categoryInput.value = "";
+        } else {
+          showNotification(
+            response.message ||
+              "Failed to share URL. Please check connection."
+          );
         }
-      );
+      }
+    );
+  }
+};
+
+shareButton.addEventListener("click", throttle(handleShare, 2000));
+
+  function throttle(func, limit) {
+  let inThrottle;
+  return function (...args) {
+    if (!inThrottle) {
+      func.apply(this, args);
+      inThrottle = true;
+      setTimeout(() => (inThrottle = false), limit);
     }
-  });
+  };
+}
 
   // Leave button event listener
   leaveButton.addEventListener("click", function () {
