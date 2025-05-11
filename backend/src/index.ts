@@ -23,8 +23,14 @@ app.post("/groups/create", async (req: Request, res: Response) => {
   }
 
   try {
+    const exist = await Group.findOne({slug:bodyData.data.name});
+    if (exist) {
+      res.status(400).json({status:"error", message: "Group Name already exist"});
+      return;
+    }
+
     const newGroup = new Group({
-      slug: bodyData.data.name,
+      slug: bodyData.data.name.toLocaleLowerCase(),
       members: [],
       sharedUrls: [],
     });
@@ -45,7 +51,8 @@ app.post("/groups/create", async (req: Request, res: Response) => {
     const savedGroup = await newGroup.save();
 
     res.status(200).json({
-      message: "success",
+      status: "success",
+      message: "Group created successfully",
       groupId: savedGroup._id,
     });
   } catch (error) {
@@ -110,15 +117,14 @@ app.post("/groups/join", async (req: Request, res: Response) => {
 
 app.post("/groups/share", async (req: Request, res: Response) => {
   const parsedData = z.object({
-    groupName: z.string(),
-    url: z.string().url(), // validate URL format
+    id: z.string(),
+    url: z.string(),
     title: z.string().optional(),
     notes: z.string().optional(),
     category: z.string().optional(),
-    id: z.string(), // group ID
     username: z.string().optional(),
   });
-
+  
   const bodyData = parsedData.safeParse(req.body);
   if (!bodyData.success) {
     res
@@ -140,16 +146,14 @@ app.post("/groups/share", async (req: Request, res: Response) => {
       username,
     } = bodyData.data;
 
-    // 1. Check if URL already exists
     let urlDoc = await Url.findOne({ url });
 
     if (urlDoc) {
-      // 2. If it exists, check if it's already shared in the group
       const alreadyShared = await Group.findOne({
         _id: groupId,
         sharedUrls: { $in: [urlDoc._id] },
       });
-
+      
       if (alreadyShared) {
         res.status(400).json({
           status: "error",
@@ -158,18 +162,15 @@ app.post("/groups/share", async (req: Request, res: Response) => {
         return;
       }
     } else {
-      // 3. Create URL if it doesn't exist
       urlDoc = await Url.create({ url, title, notes, category });
     }
 
-    // 4. Add URL to the group (prevent duplicates with $addToSet)
     await Group.findByIdAndUpdate(
       groupId,
       { $addToSet: { sharedUrls: urlDoc._id } },
       { new: true }
     );
 
-    // 5. Also add to user, if username provided
     if (username) {
       await User.findOneAndUpdate(
         { username },

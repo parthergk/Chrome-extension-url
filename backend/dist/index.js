@@ -66,6 +66,11 @@ app.post("/groups/create", (req, res) => __awaiter(void 0, void 0, void 0, funct
         return;
     }
     try {
+        const exist = yield schema_1.Group.findOne({ slug: bodyData.data.name });
+        if (exist) {
+            res.status(400).json({ status: "error", message: "GroupName already exist" });
+            return;
+        }
         const newGroup = new schema_1.Group({
             slug: bodyData.data.name,
             members: [],
@@ -85,15 +90,14 @@ app.post("/groups/create", (req, res) => __awaiter(void 0, void 0, void 0, funct
         }
         const savedGroup = yield newGroup.save();
         res.status(200).json({
-            message: "success",
+            status: "success",
+            message: "Group created successfully",
             groupId: savedGroup._id,
         });
     }
     catch (error) {
         console.error("Error in /groups/create:", error);
-        res
-            .status(500)
-            .json({
+        res.status(500).json({
             status: "error",
             message: "Group not created, please try again",
         });
@@ -143,45 +147,60 @@ app.post("/groups/join", (req, res) => __awaiter(void 0, void 0, void 0, functio
 }));
 app.post("/groups/share", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const parsedData = zod_1.z.object({
+        id: zod_1.z.string(),
         url: zod_1.z.string(),
         title: zod_1.z.string().optional(),
         notes: zod_1.z.string().optional(),
         category: zod_1.z.string().optional(),
-        id: zod_1.z.string(),
         username: zod_1.z.string().optional(),
     });
     const bodyData = parsedData.safeParse(req.body);
     if (!bodyData.success) {
         res
             .status(400)
-            .json({ status: "error", message: "Please enter a url and group ID" });
+            .json({
+            status: "error",
+            message: "Please enter a valid URL and group ID",
+        });
         return;
     }
     try {
-        const newUrl = yield schema_1.Url.create({
-            url: bodyData.data.url,
-            title: bodyData.data.title,
-            notes: bodyData.data.notes,
-            category: bodyData.data.category,
-        });
-        yield schema_1.Group.findByIdAndUpdate(bodyData.data.id, {
-            $addToSet: { sharedUrls: newUrl._id },
-        }, { new: true });
-        if (bodyData.data.username) {
-            yield schema_1.User.findOneAndUpdate({ username: bodyData.data.username }, {
-                $addToSet: { sharedUrls: newUrl._id },
+        const { url, title, notes, category, id: groupId, username, } = bodyData.data;
+        let urlDoc = yield schema_1.Url.findOne({ url });
+        if (urlDoc) {
+            const alreadyShared = yield schema_1.Group.findOne({
+                _id: groupId,
+                sharedUrls: { $in: [urlDoc._id] },
             });
+            if (alreadyShared) {
+                res.status(400).json({
+                    status: "error",
+                    message: "URL already shared in this group.",
+                });
+                return;
+            }
+        }
+        else {
+            urlDoc = yield schema_1.Url.create({ url, title, notes, category });
+        }
+        yield schema_1.Group.findByIdAndUpdate(groupId, { $addToSet: { sharedUrls: urlDoc._id } }, { new: true });
+        if (username) {
+            yield schema_1.User.findOneAndUpdate({ username }, { $addToSet: { sharedUrls: urlDoc._id } });
         }
         res.status(200).json({
-            message: "success",
-            urlId: newUrl._id,
+            status: "success",
+            message: "URL shared successfully.",
+            urlId: urlDoc._id,
         });
+        return;
     }
     catch (error) {
-        console.error("Error in /groups/share", error);
-        res
-            .status(500)
-            .json({ status: "error", message: "URL not shared, please try again" });
+        console.error("Error in /groups/share:", error);
+        res.status(500).json({
+            status: "error",
+            message: "URL not shared, please try again.",
+        });
+        return;
     }
 }));
 app.get("/groups/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -206,9 +225,7 @@ app.get("/groups/:id", (req, res) => __awaiter(void 0, void 0, void 0, function*
             res.status(404).json({ message: "Group not found" });
             return;
         }
-        res
-            .status(200)
-            .json({
+        res.status(200).json({
             message: "success",
             id: group._id,
             name: group.slug,

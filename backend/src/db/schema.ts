@@ -42,7 +42,6 @@ const userSchema = new Schema<IUser>(
     username: {
       type: String,
       required: true,
-      unique: true,
       index: true
     },
     sharedUrls: [{
@@ -58,7 +57,6 @@ const groupSchema = new Schema<IGroup>(
     slug: {
       type: String,
       required: true,
-      unique: true,
     },
     members: [{
       type: Schema.Types.ObjectId,

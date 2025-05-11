@@ -21,7 +21,6 @@ const userSchema = new mongoose_1.Schema({
     username: {
         type: String,
         required: true,
-        unique: true,
         index: true
     },
     sharedUrls: [{
@@ -33,7 +32,6 @@ const groupSchema = new mongoose_1.Schema({
     slug: {
         type: String,
         required: true,
-        unique: true,
     },
     members: [{
             type: mongoose_1.Schema.Types.ObjectId,

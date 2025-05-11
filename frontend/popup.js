@@ -247,9 +247,9 @@ document.addEventListener("DOMContentLoaded", function () {
       },
       function (response) {
         if (response.success) {
-          showNotification("Created group");
+          showNotification( response.message || "Created group");
         } else {
-          showNotification("Not created something went wrong");
+          showNotification( response.message || "Not created something went wrong");
         }
       }
     );
@@ -298,9 +298,15 @@ document.addEventListener("DOMContentLoaded", function () {
         category: category,
       },
       function (response) {
+        console.log("response", response);
+        
         if (response.success) {
-          showNotification("URL shared with group!");
+          console.log("fetch response");
+          
+          showNotification(response.message || "URL shared with group!");
           fetchBookmarks();
+          console.log("fetched call");
+          
           notesInput.value = "";
           categoryInput.value = "";
         } else {

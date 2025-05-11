@@ -11,10 +11,10 @@ async function createGroup(groupName) {
     });
 
     const result = await response.json();
-    if (result.message === "success") {
-      return true;
+    if (result.status === "success") {
+      return {status: true, message: result.message};
     } else {
-      return false;
+      return {status: false, message: result.message};
     }
   } catch (error) {
     console.error("Error joining group:", error);
@@ -81,10 +81,10 @@ async function shareUrlWithGroup(
 
     const data = await response.json();
 
-    if (data.message === "success") {
-      return true;
+    if (data.status === "success") {      
+      return {status: true, message: data.message};
     } else {
-      return false;
+      return {status: false, message: data.message};
     }
   } catch (error) {
     console.error("Error sharing URL:", error);
@@ -153,8 +153,8 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     return true;
   } else if (request.action === "createGroup") {
     (async () => {
-      const success = await createGroup(request.groupName);
-      sendResponse({ success: success });
+      const res = await createGroup(request.groupName);
+      sendResponse({ success: res.status, message: res.message });
     })();
     return true;
   } else if (request.action === "joinGroup") {
@@ -189,7 +189,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       // If we have stored connection info
       if (data.groupId && data.username) {
         (async () => {
-          const success = await shareUrlWithGroup(
+          const res = await shareUrlWithGroup(
             request.url,
             request.title,
             request.notes,
@@ -197,14 +197,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             data.groupId,
             data.username
           );
-          if (success) {
-            sendResponse({ success: success });
-          }else{
-            sendResponse({success: false, message: "URL already shared."})
-          }
+          sendResponse({ success: res.status, message: res.message });
         })();
       }else{
-        sendResponse({success: false, message: "GroupId or Username not found"})
+        sendResponse({success: false, message: "GroupId or Username not found"});
       }
     });
     return true;
