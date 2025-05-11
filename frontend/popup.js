@@ -73,7 +73,6 @@ document.addEventListener("DOMContentLoaded", function () {
       function (response) {
         if (response.success) {
           checkConnectionStatus();
-          showNotification("Fetched all bookmarks");
           loadBookmarks();
         } else {
           showNotification(response.message || "No group ID found");
@@ -110,6 +109,7 @@ document.addEventListener("DOMContentLoaded", function () {
         bookmarkItem.className = "bookmark-item";
 
         const bookmarkContent = `
+        <div class = "url-cont">
             <a href="${bookmark.url}" class="bookmark-url" target="_blank">${
           bookmark.title
         }</a>
@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", function () {
               bookmark.category
                 ? `<span class="bookmark-category">${escapeHTML(bookmark.category)}</span>`
                 : ""
-            }
+            }</div>
             <button class="delete-btn" data-index="${index}" data-urlId="${
           bookmark._id
         }">Delete</button>

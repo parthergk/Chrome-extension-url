@@ -68,11 +68,11 @@ app.post("/groups/create", (req, res) => __awaiter(void 0, void 0, void 0, funct
     try {
         const exist = yield schema_1.Group.findOne({ slug: bodyData.data.name });
         if (exist) {
-            res.status(400).json({ status: "error", message: "GroupName already exist" });
+            res.status(400).json({ status: "error", message: "Group Name already exist" });
             return;
         }
         const newGroup = new schema_1.Group({
-            slug: bodyData.data.name,
+            slug: bodyData.data.name.toLocaleLowerCase(),
             members: [],
             sharedUrls: [],
         });
