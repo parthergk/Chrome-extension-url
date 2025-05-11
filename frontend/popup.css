@@ -1,237 +1,258 @@
+:root {
+  --bg: #FFF3E4;
+  --panel: #F4C8A8;
+  --primary: #D66A1F;
+  --accent: #A54B13;
+  --highlight: #E0873E;
+  --hover: #E0873E;
+  --shadow: #5B3416;
+  --text-primary: #2E1C12;
+  --text-secondary: #6E4C36;
+  --muted: #AD7950;
+  --border: #EBD2BC;
+  --success: #4CAF50;
+  --danger: #D32F2F;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-  }
-  
-  .container {
-    width: 350px;
-    padding-inline: 15px;
-    padding-block: 10px;
-  }
-  
-  h1 {
-    color: #4285f4;
-    font-size: 18px;
-    margin-top: 0;
-    margin-bottom: 15px;
-    padding-bottom: 5px;
-    border-bottom: 1px solid #e0e0e0;
-  }
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg);
+  color: var(--text-primary);
+}
 
-  h3 {
-    font-size: 14px;
-    margin-block: 5px;
-    color: #333;
-  }
-  
-  .form-group {
-    margin-bottom: 15px;
-  }
-  
-  label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-    font-size: 12px;
-    color: #555;
-  }
-  
-  textarea, input[type="text"] {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-sizing: border-box;
-  }
-  
-  textarea {
-    height: 45px;
-    resize: vertical;
-  }
-  
-  button {
-    background-color: #4285f4;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-    width: 100%;
-  }
-  
-  button:hover {
-    background-color: #357ae8;
-  }
-  
-  button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-  }
-  
-  .button-group {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-  
-  .button-group button {
-    flex: 1;
-  }
-  
-  /* Tab styles */
-  #tabs {
-    display: flex;
-    margin-bottom: 15px;
-    border-bottom: 1px solid #e0e0e0;
-  }
-  
-  .tab-btn {
-    flex: 1;
-    background-color: #f5f5f5;
-    color: #555;
-    padding: 8px;
-    border: none;
-    border-bottom: 2px solid transparent;
-    cursor: pointer;
-  }
-  
-  .tab-btn.active {
-    background-color: white;
-    color: #4285f4;
-    border-bottom: 2px solid #4285f4;
-  }
-  
-  .tab-content {
-    display: none;
-  }
-  
-  .tab-content.active {
-    display: block;
-  }
+.container {
+  width: 350px;
+  padding-inline: 15px;
+  padding-block: 10px;
+}
 
-  .or{
-    display:  flex;
-    justify-content: center;
-    align-items: center;
-    margin-block: 15px;
-  }
+h1, h3 {
+  color: var(--text-primary);
+}
 
-  .sline{
-    height: 1px;
-    width: 100%;
-    background-color: #333;
-    margin-inline: 5px;
-  }
-  .eline{
-    height: 1px;
-    width: 100%;
-    background-color: #333;
-    margin-inline: 5px;
-  }
-  
-  /* Connection status styles */
-  #join-status {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-    padding: 8px;
-    background-color: #f5f5f5;
-    border-radius: 4px;
-  }
-  
-  #status-indicator {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    margin-right: 8px;
-  }
-  
-  .joined {
-    background-color: #4caf50;
-  }
-  
-  .leaved {
-    background-color: #f44336;
-  }
-  
-  #status-text {
-    font-size: 12px;
-    font-weight: bold;
-  }
-  
-  #current-url-container {
-    background-color: #f5f5f5;
-    padding: 8px;
-    border-radius: 4px;
-    margin-bottom: 15px;
-  }
-  
-  #current-url {
-    word-break: break-all;
-    font-size: 12px;
-    color: #666;
-  }
-  
-  #bookmarks-container {
-    margin-top: 5px;
-    max-height: 160px;
-    overflow-y: auto;
-    border-top: 1px solid #e0e0e0;
-    padding-top: 10px;
-  }
-  
-  .bookmark-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px;
-    border-bottom: 1px solid #eee;
-  }
-  .url-cont{
-    display: flex;
-    flex-direction: column;
-  }
-  .bookmark-item:last-child {
-    border-bottom: none;
-  }
-  
-  .bookmark-url {
-    font-size: 12px;
-    color: #1a0dab;
-    text-decoration: none;
-    display: block;
-    margin-bottom: 3px;
-    word-break: break-all;
-  }
-  
-  .bookmark-notes {
-    font-size: 11px;
-    color: #666;
-  }
-  
-  .bookmark-category {
-    font-size: 10px;
-    background-color: #f1f1f1;
-    color: #555;
-    padding: 2px 5px;
-    border-radius: 3px;
-    display: inline-block;
-    margin-top: 3px;
-  }
-  
-  .delete-btn {
-    color: #ff5252;
-    background: none;
-    border: none;
-    font-size: 11px;
-    float: right;
-    padding-inline: 10px;
-    cursor: pointer;
-    width: auto;
-  }
+h1 {
+  font-size: 18px;
+  margin-top: 0;
+  margin-bottom: 15px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--border);
+}
 
-  .notification{
-    padding: 0px 15px 10px 15px;
-  }
+h3 {
+  font-size: 14px;
+  margin-block: 5px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+textarea, input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+textarea {
+  height: 45px;
+  resize: vertical;
+}
+
+button {
+  background-color: var(--accent);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  width: 100%;
+}
+
+button:hover {
+  background-color: var(--hover);
+}
+
+button:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.button-group button {
+  flex: 1;
+}
+
+/* Tab styles */
+#tabs {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 15px;
+}
+
+.tab-btn {
+  flex: 1;
+  background-color: var(--panel);
+  color: var(--text-primary);
+  padding: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.tab-btn.active {
+  background-color: var(--accent);
+  color: white;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+.or {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-block: 15px;
+}
+
+.sline, .eline {
+  height: 1px;
+  width: 100%;
+  background-color: var(--border);
+  margin-inline: 5px;
+}
+
+/* Connection status styles */
+#join-status {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 8px;
+  background-color: var(--panel);
+  border-radius: 4px;
+}
+
+#status-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.joined {
+  background-color: var(--success);
+}
+
+.leaved {
+  background-color: var(--danger);
+}
+
+#status-text {
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--text-secondary);
+}
+
+#current-url-container {
+  background-color: var(--panel);
+  padding: 8px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+#current-url {
+  word-break: break-word;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+#bookmarks-container {
+  margin-top: 5px;
+  max-height: 160px;
+  overflow-y: auto;
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+}
+
+.bookmark-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.bookmark-item:last-child {
+  border-bottom: none;
+}
+
+.url-cont {
+  display: flex;
+  flex-direction: column;
+}
+
+.bookmark-url {
+  font-size: 12px;
+  color: var(--accent);
+  text-decoration: none;
+  display: block;
+  margin-bottom: 3px;
+  word-break: break-word;
+}
+
+.bookmark-notes {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.bookmark-category {
+  font-size: 10px;
+  background-color: var(--hover);
+  color: var(--text-secondary);
+  padding: 2px 5px;
+  border-radius: 3px;
+  display: inline-block;
+  margin-top: 3px;
+}
+
+.delete-btn {
+  color: var(--danger);
+  background: none;
+  border: none;
+  font-size: 11px;
+  float: right;
+  padding-inline: 10px;
+  cursor: pointer;
+  width: auto;
+}
+
+.notification {
+  padding: 0px 15px 10px 15px;
+}
+
+.tool-tip{
+  color:   var(--danger);
+}

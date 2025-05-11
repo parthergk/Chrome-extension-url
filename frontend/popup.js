@@ -32,11 +32,9 @@ document.addEventListener("DOMContentLoaded", function () {
     button.addEventListener("click", function () {
       const tabId = this.getAttribute("data-tab");
 
-      // Update active tab button
       tabButtons.forEach((btn) => btn.classList.remove("active"));
       this.classList.add("active");
 
-      // Show active tab content
       tabContents.forEach((content) => content.classList.remove("active"));
       document.getElementById(tabId).classList.add("active");
 
@@ -64,7 +62,6 @@ document.addEventListener("DOMContentLoaded", function () {
   checkConnectionStatus();
 
   function fetchBookmarks() {
-    console.log("fetched Bookmarks");
 
     chrome.runtime.sendMessage(
       {
@@ -83,12 +80,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Function to load bookmarks from storage
   function loadBookmarks() {
-    console.log("Load Bookmarks");
 
     chrome.storage.sync.get("bookmarks", function (data) {
       const bookmarks = data.bookmarks || [];
 
-      // Clear existing bookmarks display
       bookmarksList.innerHTML = "";
 
       if (bookmarks.length === 0) {
@@ -151,12 +146,9 @@ document.addEventListener("DOMContentLoaded", function () {
           chrome.storage.sync.get("bookmarks", function (data) {
             let bookmarks = data.bookmarks || [];
 
-            // Remove the bookmark at the specified index
             bookmarks.splice(index, 1);
 
-            // Save the updated bookmarks
             chrome.storage.sync.set({ bookmarks: bookmarks }, function () {
-              // Update the display
               loadBookmarks();
             });
           });
@@ -197,7 +189,7 @@ document.addEventListener("DOMContentLoaded", function () {
           // Update UI for disconnected state
           tooltip.textContent = "Join a group to share";
           statusIndicator.className = "leaved";
-          statusText.textContent = "Leaved";
+          statusText.textContent = "Not joined any group";
           shareButton.disabled = true;
           tooltip.style.display = "block";
           joinButton.style.display = "block";
@@ -223,7 +215,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.body.appendChild(notification);
 
-    // Remove notification after a delay
     setTimeout(function () {
       notification.style.opacity = "0";
       setTimeout(function () {
@@ -298,14 +289,11 @@ document.addEventListener("DOMContentLoaded", function () {
         category: category,
       },
       function (response) {
-        console.log("response", response);
         
         if (response.success) {
-          console.log("fetch response");
           
           showNotification(response.message || "URL shared with group!");
           fetchBookmarks();
-          console.log("fetched call");
           
           notesInput.value = "";
           categoryInput.value = "";
@@ -338,7 +326,6 @@ shareButton.addEventListener("click", throttle(handleShare, 2000));
     chrome.runtime.sendMessage({ action: "leaveGroup" }, function (response) {
       if (response.success) {
         chrome.storage.sync.set({ bookmarks: [] }, function () {
-          console.log("Bookmarks cleared after leaving the group.");
           loadBookmarks();
         });
         checkConnectionStatus();

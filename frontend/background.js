@@ -186,7 +186,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     return true;
   } else if (request.action === "shareUrl") {
     chrome.storage.sync.get(["groupId", "username"], function (data) {
-      // If we have stored connection info
       if (data.groupId && data.username) {
         (async () => {
           const res = await shareUrlWithGroup(
