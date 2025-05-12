@@ -266,9 +266,9 @@ document.addEventListener("DOMContentLoaded", function () {
         if (response.success) {
           checkConnectionStatus();
           fetchBookmarks();
-          showNotification("Joined group");
+          showNotification(response.message || "Joined group");
         } else {
-          showNotification("Not joined something went wrong");
+          showNotification(response.message || "Not joined something went wrong");
         }
       }
     );

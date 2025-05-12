@@ -3,7 +3,7 @@
   "name": "URL Bookmarker",
   "version": "1.0",
   "description": "Save and categorize important URLs with notes",
-  "permissions": ["storage", "activeTab"],
+  "permissions": ["storage", "activeTab", "notifications"],
 
   "action": {
     "default_popup": "popup.html",

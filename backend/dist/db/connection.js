@@ -16,7 +16,6 @@ exports.connectToDB = connectToDB;
 const mongoose_1 = __importDefault(require("mongoose"));
 function connectToDB() {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log("DB_URI from env:", process.env.DB_URI);
         const uri = process.env.DB_URI;
         if (!uri) {
             throw new Error("Missing DB_URI in environment variables");
