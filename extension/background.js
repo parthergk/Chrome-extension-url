@@ -1,6 +1,6 @@
 async function createGroup(groupName) {
   try {
-    const response = await fetch("http://localhost:3000/api/groups/create", {
+    const response = await fetch("http://51.20.252.198/api/groups/create", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
