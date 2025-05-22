@@ -1,1 +1,1 @@
-{"root":["./src/index.ts","./src/db/connection.ts","./src/db/schema.ts","./src/routes/grouproutes.ts"],"version":"5.8.2"}
+{"root":["./src/index.ts","./src/db/connection.ts","./src/db/schema.ts","./src/routes/grouproutes.ts"],"version":"5.8.3"}

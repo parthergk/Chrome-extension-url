@@ -1,6 +1,6 @@
 async function createGroup(groupName) {
   try {
-    const response = await fetch("http://51.20.252.198/api/groups/create", {
+    const response = await fetch("https://chrome-extension-url-production-95bb.up.railway.app/api/groups/create", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -24,7 +24,7 @@ async function createGroup(groupName) {
 
 async function joinGroup(grpName, user) {
   try {
-    const response = await fetch("http://localhost:3000/api/groups/join", {
+    const response = await fetch("https://chrome-extension-url-production-95bb.up.railway.app/api/groups/join", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -64,7 +64,7 @@ async function shareUrlWithGroup(
   username
 ) {
   try {
-    const response = await fetch("http://localhost:3000/api/groups/share", {
+    const response = await fetch("https://chrome-extension-url-production-95bb.up.railway.app/api/groups/share", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -96,7 +96,7 @@ async function shareUrlWithGroup(
 // fetched all bookmarks
 async function fetchBookmarksFromServer(id) {
   try {
-    const res = await fetch(`http://localhost:3000/api/groups/${id}`);
+    const res = await fetch(`https://chrome-extension-url-production-95bb.up.railway.app/api/groups/${id}`);
     const data = await res.json();
 
     if (data.message === "success") {
@@ -114,7 +114,7 @@ async function fetchBookmarksFromServer(id) {
 // Delete url
 async function deleteBookmark(id) {
   try {
-    const resJson = await fetch(`http://localhost:3000/api/groups/${id}`, {
+    const resJson = await fetch(`https://chrome-extension-url-production-95bb.up.railway.app/api/groups/${id}`, {
       method: "DELETE",
     });
     const res = await resJson.json();
@@ -216,7 +216,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   }
 });
 
-const socket = new WebSocket("ws://localhost:5000");
+const socket = new WebSocket("wss://chrome-extension-url-production.up.railway.app");
 
 chrome.storage.sync.get(["username"], function (data) {
   if (data.username) {

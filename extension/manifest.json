@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "URL Bookmarker",
+  "name": "ShareNest",
   "version": "1.0",
-  "description": "Save and categorize important URLs with notes",
+  "description": "ShareNest allows users to share URLs by joining a group. It helps categorize and store URLs with optional notes, and sends real-time notifications when new links are shared.",
   "permissions": ["storage", "activeTab", "notifications"],
   "host_permissions": ["<all_urls>"],
 
@@ -20,9 +20,9 @@
   },
 
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; connect-src 'self' ws://localhost:3000"
+    "extension_pages": "script-src 'self'; connect-src 'self' wss://chrome-extension-url-production.up.railway.app https://chrome-extension-url-production-95bb.up.railway.app/"
   },
-  
+
   "icons": {
     "16": "images/icon-16.png",
     "48": "images/icon-48.png",
